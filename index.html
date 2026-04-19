@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LZW Encoding Simulator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f5f3;
+      color: #1a1a18;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    header {
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 22px;
+      font-weight: 500;
+      color: #1a1a18;
+    }
+    header p {
+      font-size: 14px;
+      color: #6b6b67;
+      margin-top: 4px;
+      line-height: 1.6;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #ffffff;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* ── Form row ── */
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+    }
+    .form-col { display: flex; flex-direction: column; gap: 5px; }
+    .form-col.grow { flex: 1; min-width: 180px; }
+
+    label {
+      font-size: 12px;
+      color: #6b6b67;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      height: 38px;
+      padding: 0 12px;
+      border: 0.5px solid rgba(0,0,0,0.2);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #fff;
+      color: #1a1a18;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus { border-color: #7F77DD; box-shadow: 0 0 0 3px rgba(127,119,221,0.12); }
+
+    button {
+      height: 38px;
+      padding: 0 18px;
+      border: 0.5px solid rgba(0,0,0,0.2);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #fff;
+      color: #1a1a18;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    button:hover { background: #f0eff8; }
+    button.primary {
+      background: #534AB7;
+      color: #fff;
+      border-color: #534AB7;
+    }
+    button.primary:hover { background: #3C3489; border-color: #3C3489; }
+    button:active { transform: scale(0.98); }
+
+    /* ── Stats ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+    }
+    .stat {
+      background: #f5f5f3;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+    }
+    .stat-label { font-size: 12px; color: #6b6b67; margin-bottom: 4px; }
+    .stat-val { font-size: 22px; font-weight: 500; color: #1a1a18; }
+
+    /* ── Code pills ── */
+    .codes-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+    .code-pill {
+      background: #EEEDFE;
+      color: #3C3489;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      border-radius: 8px;
+      overflow: hidden;
+      width: fit-content;
+      margin-bottom: 1rem;
+    }
+    .tab {
+      padding: 7px 18px;
+      font-size: 13px;
+      cursor: pointer;
+      background: #f5f5f3;
+      color: #6b6b67;
+      border: none;
+      border-radius: 0;
+      height: auto;
+    }
+    .tab.active { background: #fff; color: #1a1a18; font-weight: 500; }
+    .tab:hover { background: #eeedf8; }
+
+    /* ── Step controls ── */
+    .step-nav { display: flex; gap: 8px; align-items: center; }
+    .step-info { font-size: 13px; color: #6b6b67; flex: 1; }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: #f0eff8;
+      border-radius: 2px;
+      margin: 10px 0 1rem;
+    }
+    .progress-fill {
+      height: 4px;
+      background: #7F77DD;
+      border-radius: 2px;
+      transition: width 0.2s ease;
+    }
+
+    /* ── Character display ── */
+    .char-display { display: flex; flex-wrap: wrap; gap: 4px; margin: 0.75rem 0; }
+    .char-box {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+      border-radius: 5px;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      background: #f5f5f3;
+      color: #1a1a18;
+    }
+    .char-box.matched { background: #EEEDFE; color: #3C3489; border-color: #AFA9EC; }
+    .char-box.lookahead { background: #FAEEDA; color: #633806; border-color: #FAC775; }
+    .char-box.done { opacity: 0.35; }
+
+    /* ── Step table ── */
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th {
+      text-align: left;
+      font-weight: 500;
+      font-size: 12px;
+      color: #6b6b67;
+      padding: 7px 10px;
+      border-bottom: 0.5px solid rgba(0,0,0,0.1);
+      white-space: nowrap;
+    }
+    td {
+      padding: 8px 10px;
+      border-bottom: 0.5px solid rgba(0,0,0,0.07);
+      color: #1a1a18;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr.highlight td { background: #f0eff8; }
+    .yes { color: #0F6E56; }
+    .no  { color: #993C1D; }
+
+    /* ── Dictionary grid ── */
+    .dict-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+      gap: 6px;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+    .dict-entry {
+      background: #f5f5f3;
+      border-radius: 6px;
+      padding: 5px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .dict-entry.new { background: #E1F5EE; }
+    .dict-key { font-family: "SFMono-Regular", Consolas, monospace; font-size: 12px; color: #1a1a18; }
+    .dict-idx { font-size: 12px; color: #6b6b67; }
+    .dict-entry.new .dict-key { color: #085041; }
+    .dict-entry.new .dict-idx { color: #0F6E56; }
+
+    /* ── Misc ── */
+    .section-label {
+      font-size: 12px;
+      color: #6b6b67;
+      font-weight: 500;
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+    .legend { display: flex; gap: 16px; font-size: 12px; color: #6b6b67; margin-bottom: 8px; }
+    .legend-dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 3px;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+    .alert {
+      background: #FCEBEB;
+      color: #A32D2D;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    #results { display: none; }
+
+    @media (max-width: 540px) {
+      .form-row { flex-direction: column; }
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>LZW Encoding Simulator</h1>
+    <p>Enter a string and configure the dictionary to simulate the Lempel–Ziv–Welch compression algorithm step by step.</p>
+  </header>
+
+  <!-- Input card -->
+  <div class="card">
+    <div class="form-row">
+      <div class="form-col grow">
+        <label for="inputStr">Input string</label>
+        <input type="text" id="inputStr" value="ABABABABA" placeholder="e.g. ABABABABA" />
+      </div>
+      <div class="form-col">
+        <label for="dictStart">Dictionary start index</label>
+        <select id="dictStart">
+          <option value="256">256 (full ASCII)</option>
+          <option value="26">26 (A–Z only)</option>
+          <option value="custom">Custom…</option>
+        </select>
+      </div>
+      <div class="form-col" id="customWrap" style="display:none;">
+        <label for="customVal">Custom start index</label>
+        <input type="number" id="customVal" value="10" min="1" max="512" style="width:110px;" />
+      </div>
+      <div class="form-col">
+        <label style="visibility:hidden;">action</label>
+        <button class="primary" onclick="runEncode()">Encode</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert" id="alertBox"></div>
+
+  <!-- Results -->
+  <div id="results">
+
+    <!-- Stats -->
+    <div class="card">
+      <div class="stat-grid">
+        <div class="stat"><div class="stat-label">Input length</div><div class="stat-val" id="s-inlen">—</div></div>
+        <div class="stat"><div class="stat-label">Output codes</div><div class="stat-val" id="s-codes">—</div></div>
+        <div class="stat"><div class="stat-label">Dictionary size</div><div class="stat-val" id="s-dict">—</div></div>
+        <div class="stat"><div class="stat-label">Compression ratio</div><div class="stat-val" id="s-ratio">—</div></div>
+      </div>
+    </div>
+
+    <!-- Output codes -->
+    <div class="card">
+      <div class="section-label">Encoded output codes</div>
+      <div class="codes-wrap" id="outCodes"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" id="tab-btn-steps" onclick="switchTab('steps')">Step-by-step</button>
+      <button class="tab" id="tab-btn-dict" onclick="switchTab('dict')">Full dictionary</button>
+    </div>
+
+    <!-- Step-by-step -->
+    <div id="tab-steps">
+      <div class="card" style="margin-bottom:1rem;">
+        <div class="step-nav">
+          <button onclick="goStep(-1)">&#8592; Prev</button>
+          <span class="step-info" id="stepInfo">Step 1</span>
+          <button onclick="goStep(1)">Next &#8594;</button>
+          <button onclick="playAll()" id="playBtn">&#9654; Play</button>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progBar" style="width:0%"></div></div>
+
+        <div class="legend">
+          <span><span class="legend-dot" style="background:#EEEDFE;border:1px solid #AFA9EC;"></span>Matched (W)</span>
+          <span><span class="legend-dot" style="background:#FAEEDA;border:1px solid #FAC775;"></span>Lookahead (C)</span>
+          <span><span class="legend-dot" style="background:#f5f5f3;opacity:0.4;border:0.5px solid #ccc;"></span>Processed</span>
+        </div>
+        <div class="char-display" id="charDisplay"></div>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>W (current)</th>
+                <th>C (next char)</th>
+                <th>W+C in dict?</th>
+                <th>Output code</th>
+                <th>Added to dict</th>
+                <th>Dict index</th>
+              </tr>
+            </thead>
+            <tbody id="stepTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dictionary view -->
+    <div id="tab-dict" style="display:none;">
+      <div class="card">
+        <div class="section-label" style="margin-bottom:10px;">
+          All dictionary entries &nbsp;—&nbsp;
+          <span style="color:#0F6E56;">green = added during encoding</span>,
+          <span style="color:#6b6b67;">gray = initial entries</span>
+        </div>
+        <div class="dict-grid" id="dictGrid"></div>
+      </div>
+    </div>
+
+  </div><!-- /results -->
+
+</div><!-- /container -->
+
+<script>
+  /* ── State ── */
+  let steps = [], fullDict = {}, currentStep = 0, playTimer = null;
+
+  /* ── Event: custom index toggle ── */
+  document.getElementById('dictStart').addEventListener('change', function () {
+    document.getElementById('customWrap').style.display = this.value === 'custom' ? 'flex' : 'none';
+  });
+
+  /* ── Helpers ── */
+  function getDictStart() {
+    const v = document.getElementById('dictStart').value;
+    if (v === 'custom') return parseInt(document.getElementById('customVal').value, 10) || 10;
+    return parseInt(v, 10);
+  }
+
+  function initDict(startIdx) {
+    const d = {};
+    if (startIdx === 256) {
+      for (let i = 0; i < 256; i++) d[String.fromCharCode(i)] = i;
+    } else if (startIdx === 26) {
+      for (let i = 0; i < 26; i++) d[String.fromCharCode(65 + i)] = i;
+    } else {
+      for (let i = 0; i < startIdx; i++) d[String.fromCharCode(i)] = i;
+    }
+    return d;
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function showAlert(msg) {
+    const el = document.getElementById('alertBox');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+  function hideAlert() {
+    document.getElementById('alertBox').style.display = 'none';
+  }
+
+  /* ── Core: LZW encode ── */
+  function runEncode() {
+    stopPlay();
+    hideAlert();
+    const str = document.getElementById('inputStr').value;
+    if (!str) { showAlert('Input cannot be empty. Please enter a string to encode.'); document.getElementById('results').style.display = 'none'; return; }
+
+    const startIdx = getDictStart();
+    const dict = initDict(startIdx);
+    let nextCode = startIdx;
+    let W = '';
+    const codes = [];
+    steps = [];
+    fullDict = Object.assign({}, dict);
+
+    for (let i = 0; i < str.length; i++) {
+      const C = str[i];
+      const WC = W + C;
+      if (WC in dict) {
+        steps.push({ step: steps.length + 1, W: W || '(empty)', C, WC, inDict: true, outputCode: null, added: null, addedIdx: null, pos: i, matchLen: WC.length });
+        W = WC;
+      } else {
+        const outputCode = dict[W];
+        dict[WC] = nextCode;
+        fullDict[WC] = nextCode;
+        nextCode++;
+        codes.push(outputCode);
+        steps.push({ step: steps.length + 1, W: W || '(empty)', C, WC, inDict: false, outputCode, added: WC, addedIdx: dict[WC], pos: i, matchLen: (W || '').length });
+        W = C;
+      }
+    }
+
+    if (W !== '') {
+      const outputCode = dict[W];
+      codes.push(outputCode);
+      steps.push({ step: steps.length + 1, W: W || '(empty)', C: '(EOF)', WC: '—', inDict: false, outputCode, added: null, addedIdx: null, pos: str.length, matchLen: W.length });
+    }
+
+    /* Stats */
+    document.getElementById('s-inlen').textContent = str.length;
+    document.getElementById('s-codes').textContent = codes.length;
+    document.getElementById('s-dict').textContent = Object.keys(fullDict).length;
+    document.getElementById('s-ratio').textContent = (str.length / codes.length).toFixed(2) + 'x';
+
+    /* Codes */
+    document.getElementById('outCodes').innerHTML = codes.map(c => `<span class="code-pill">${c}</span>`).join('');
+
+    buildDictGrid();
+    currentStep = 0;
+    renderStep();
+    document.getElementById('results').style.display = 'block';
+    switchTab('steps');
+  }
+
+  /* ── Dictionary grid ── */
+  function buildDictGrid() {
+    const startIdx = getDictStart();
+    const el = document.getElementById('dictGrid');
+    el.innerHTML = '';
+    Object.entries(fullDict).sort((a, b) => a[1] - b[1]).forEach(([k, v]) => {
+      const isNew = v >= startIdx;
+      const d = document.createElement('div');
+      d.className = 'dict-entry' + (isNew ? ' new' : '');
+      d.innerHTML = `<span class="dict-key">${esc(k)}</span><span class="dict-idx">${v}</span>`;
+      el.appendChild(d);
+    });
+  }
+
+  /* ── Render current step ── */
+  function renderStep() {
+    const str = document.getElementById('inputStr').value;
+    const n = steps.length;
+    const s = steps[currentStep];
+    if (!s) return;
+
+    document.getElementById('stepInfo').textContent = `Step ${currentStep + 1} of ${n}`;
+    document.getElementById('progBar').style.width = ((currentStep + 1) / n * 100).toFixed(1) + '%';
+
+    /* Character display */
+    const charEl = document.getElementById('charDisplay');
+    charEl.innerHTML = '';
+    const curPos = s.pos;
+    const matchLen = s.inDict ? s.matchLen - 1 : s.matchLen;
+    const matchStart = curPos - matchLen;
+
+    for (let i = 0; i < str.length; i++) {
+      const b = document.createElement('div');
+      b.className = 'char-box';
+      b.textContent = str[i];
+      if (i < matchStart) b.classList.add('done');
+      else if (i < curPos) b.classList.add('matched');
+      else if (i === curPos) b.classList.add('lookahead');
+      charEl.appendChild(b);
+    }
+
+    /* Step table */
+    const tbody = document.getElementById('stepTable');
+    tbody.innerHTML = '';
+    for (let i = 0; i <= currentStep; i++) {
+      const st = steps[i];
+      const tr = document.createElement('tr');
+      if (i === currentStep) tr.className = 'highlight';
+      tr.innerHTML = `
+        <td>${st.step}</td>
+        <td>${esc(st.W)}</td>
+        <td>${esc(st.C)}</td>
+        <td class="${st.inDict ? 'yes' : 'no'}">${st.inDict ? 'Yes' : 'No'}</td>
+        <td>${st.outputCode !== null ? st.outputCode : '—'}</td>
+        <td>${st.added ? esc(st.added) : '—'}</td>
+        <td>${st.addedIdx !== null ? st.addedIdx : '—'}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+    tbody.lastChild && tbody.lastChild.scrollIntoView({ block: 'nearest' });
+  }
+
+  /* ── Navigation ── */
+  function goStep(dir) {
+    stopPlay();
+    currentStep = Math.max(0, Math.min(steps.length - 1, currentStep + dir));
+    renderStep();
+  }
+
+  function playAll() {
+    if (playTimer) { stopPlay(); return; }
+    document.getElementById('playBtn').textContent = '⏸ Pause';
+    playTimer = setInterval(() => {
+      if (currentStep >= steps.length - 1) { stopPlay(); return; }
+      currentStep++;
+      renderStep();
+    }, 650);
+  }
+
+  function stopPlay() {
+    clearInterval(playTimer);
+    playTimer = null;
+    document.getElementById('playBtn').textContent = '▶ Play';
+  }
+
+  /* ── Tab switching ── */
+  function switchTab(name) {
+    document.getElementById('tab-steps').style.display = name === 'steps' ? 'block' : 'none';
+    document.getElementById('tab-dict').style.display = name === 'dict' ? 'block' : 'none';
+    document.getElementById('tab-btn-steps').className = 'tab' + (name === 'steps' ? ' active' : '');
+    document.getElementById('tab-btn-dict').className = 'tab' + (name === 'dict' ? ' active' : '');
+  }
+
+  /* ── Auto-run on load ── */
+  runEncode();
+</script>
+</body>
+</html>
