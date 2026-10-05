@@ -1,0 +1,18 @@
+{
+  "name": "expense-tracker-roll-39-45",
+  "version": "1.0.0",
+  "description": "Daily Expense Tracker with Categories, Charts & Monthly Reports using Express, MongoDB and Node.js",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.1"
+  },
+  "keywords": ["expense-tracker", "charts", "monthly-reports", "express", "mongodb"],
+  "author": "OST Lab IA-2",
+  "license": "ISC"
+}

@@ -1,0 +1,25 @@
+{
+  "name": "team-member-directory-q2",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Team Member Directory using React and Vite with reusable components and props",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "node preview_server.js"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.2.0"
+  },
+  "keywords": ["react", "vite", "components", "props", "directory"],
+  "author": "OST Lab IA-2"
+}

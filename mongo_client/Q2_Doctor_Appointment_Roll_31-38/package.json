@@ -1,0 +1,18 @@
+{
+  "name": "doctor-appointment-roll-31-38",
+  "version": "1.0.0",
+  "description": "Doctor Appointment Scheduling Web App for Patients and Doctors with Express, MongoDB, and React",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.1"
+  },
+  "keywords": ["appointment-scheduling", "doctor", "patient", "express", "mongodb", "react"],
+  "author": "OST Lab IA-2",
+  "license": "ISC"
+}

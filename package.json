@@ -1,7 +1,7 @@
 {
   "name": "ost-ia2-solutions",
   "version": "1.0.0",
-  "description": "Complete mock test solutions (Q1-Q9), Ollama extraction toolkit, and self-contained project zip for OST / Web Programming Lab IA-2",
+  "description": "Complete mock test solutions (Q1-Q9) with Express + React 18 + MongoDB, provided in with_comments and without_comments variants",
   "main": "bin/cli.js",
   "bin": {
     "ost-mock-test": "./bin/cli.js",
@@ -10,10 +10,14 @@
   "files": [
     "OST_Mock_Test_Solutions.zip",
     "bin",
+    "RUN_GUIDE.md",
     "README.md",
     "OLLAMA_GUIDE.md",
     "extract_code.py",
     "query_ollama.js",
+    "with_comments",
+    "without_comments",
+    "mongo_client",
     "Q1_Book_Ecommerce_Roll_24-30",
     "Q2_Doctor_Appointment_Roll_31-38",
     "Q3_Expense_Tracker_Roll_39-45",
@@ -33,7 +37,7 @@
     "q5": "node Q5_Discussion_Forum_Roll_52-59/server.js",
     "q6": "node Q6_Teacher_Student_Dashboard_Roll_61-67/server.js",
     "q7": "node Q7_Product_User_Management/server.js",
-    "q8": "node Q8_Team_Member_Directory/preview_server.js",
+    "q8": "node Q8_Team_Member_Directory/server.js",
     "q9": "node Q9_Patient_Management/server.js"
   },
   "keywords": [
@@ -60,6 +64,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "mongodb": "^6.20.0",
     "mongoose": "^8.3.1"
   }
 }
