@@ -1,0 +1,10 @@
+{
+  "name": "q5-discussion-forum-roll-52-59-frontend",
+  "version": "1.0.0",
+  "description": "React 18 Frontend for Discussion Forum with React Context API",
+  "scripts": {
+    "start": "npx serve . -p 3000",
+    "dev": "npx serve . -p 3000"
+  },
+  "license": "MIT"
+}

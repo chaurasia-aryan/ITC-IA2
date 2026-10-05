@@ -1,26 +1,26 @@
 {
-  "name": "product-user-management-q1",
+  "name": "q7-product-user-management",
   "version": "1.0.0",
-  "description": "Product and User Management Web Application with RESTful CRUD APIs and Validation using Express, MongoDB and React",
-  "main": "server.js",
+  "description": "Product and User Management System (Rolls Special Roll / Syllabus Q1) - Express + React 18 + MongoDB Native MongoClient",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "backend": "cd backend && npm start",
+    "frontend": "cd frontend && npm start"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "mongoose": "^8.3.1",
     "mongodb": "^6.20.0"
   },
   "keywords": [
-    "crud",
-    "products",
-    "users",
-    "validation",
     "express",
-    "mongodb"
+    "react",
+    "mongodb",
+    "mongoclient",
+    "ost-ia2"
   ],
-  "author": "OST Lab IA-2",
-  "license": "ISC"
+  "author": "Aryan Chaurasia",
+  "license": "MIT"
 }

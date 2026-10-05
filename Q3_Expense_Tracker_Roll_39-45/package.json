@@ -1,25 +1,26 @@
 {
-  "name": "expense-tracker-roll-39-45",
+  "name": "q3-expense-tracker-roll-39-45",
   "version": "1.0.0",
-  "description": "Daily Expense Tracker with Categories, Charts & Monthly Reports using Express, MongoDB and Node.js",
-  "main": "server.js",
+  "description": "Daily Expense Tracker & Reports (Rolls 39 to 45) - Express + React 18 + MongoDB Native MongoClient",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "backend": "cd backend && npm start",
+    "frontend": "cd frontend && npm start"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "mongoose": "^8.3.1",
     "mongodb": "^6.20.0"
   },
   "keywords": [
-    "expense-tracker",
-    "charts",
-    "monthly-reports",
     "express",
-    "mongodb"
+    "react",
+    "mongodb",
+    "mongoclient",
+    "ost-ia2"
   ],
-  "author": "OST Lab IA-2",
-  "license": "ISC"
+  "author": "Aryan Chaurasia",
+  "license": "MIT"
 }

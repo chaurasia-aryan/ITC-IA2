@@ -1,124 +1,88 @@
-# Question 6: Teacher-Student Performance Dashboard (Roll Numbers: 61 to 67)
-
-## Problem Statement
-> **Create a dashboard where teachers can add, edit, and delete student records, and students can view their performance reports. Use Express for backend APIs and MongoDB for data storage.**
+# Teacher / Student Dashboard & Gradebook
+> **Roll Numbers:** 61 to 67  
+> **Backend Port:** `5006`  
+> **Database:** MongoDB (`gradebook_db`) via Native `MongoClient` Driver (with Offline JSON Fallback)  
+> **Frontend:** React 18 (Component State, Hooks, Modern UI)
 
 ---
 
-## 1. System Architecture & Flow
+## 📌 Problem Statement
+Manage student marks, automatic percentage and letter grade calculation, class statistics (highest, lowest, class average), and printable student report card modal.
+
+---
+
+## 📁 Architecture (Separated Frontend & Backend)
+
 ```
-+---------------------------------------------------------------------------------+
-|                                 DUAL-PORTAL FRONTEND                            |
-|  - Teacher Dashboard:                                                           |
-|      * Class Analytics: Total Students, Class Average %, Pass %, Highest Scorer |
-|      * Enroll Student Form: Roll No, Name, Email, Attendance, 4 Subject Marks   |
-|      * Gradebook Table: Live records, search by Roll/Name, Edit Modal, Delete   |
-|  - Student Report Portal:                                                       |
-|      * Roll Number Lookup: Generates formal academic report card with marks,    |
-|        overall percentage, letter grade, and 75% attendance compliance check.   |
-+---------------------------------------------------------------------------------+
-                                         |
-                                 HTTP REST API (JSON)
-                                         v
-+---------------------------------------------------------------------------------+
-|                               EXPRESS BACKEND ROUTES                            |
-|  - GET    /api/students                 -> List all students (supports ?search) |
-|  - GET    /api/students/report/:rollNo  -> Single student report card by Roll No|
-|  - GET    /api/analytics                -> Aggregated class performance metrics |
-|  - POST   /api/students                 -> Teacher adds student (with validation|
-|                                            and auto-calculated grades)          |
-|  - PUT    /api/students/:id             -> Teacher edits student record         |
-|  - DELETE /api/students/:id             -> Teacher deletes student record       |
-+---------------------------------------------------------------------------------+
-                                         |
-                                  Mongoose Driver
-                                         v
-+---------------------------------------------------------------------------------+
-|                                 MONGODB DATABASE                                |
-|  - Collection 'students': { rollNo, name, email, branch, attendance, marks,     |
-|                            totalMarks, percentage, grade, status }              |
-|  - Automatic Fallback: Local JSON storage if MongoDB daemon is offline.         |
-+---------------------------------------------------------------------------------+
+Q6_Teacher_Student_Dashboard_Roll_61-67/
+├── backend/
+│   ├── server.js              # Node.js + Express API + MongoClient Native Driver
+│   ├── package.json           # Backend dependencies (express, cors, mongodb)
+│   └── data_fallback.json     # Automatic offline data persistence store
+├── frontend/
+│   ├── index.html             # HTML entry point (React 18 + Babel)
+│   ├── app.jsx                # React 18 component hierarchy, state & API calls
+│   ├── style.css              # Responsive modern CSS styling
+│   └── package.json           # Frontend helper scripts
+├── package.json               # Root scripts to run the entire app in 1 command
+└── README.md                  # This step-by-step documentation
 ```
 
 ---
 
-## 2. Key Technical Concepts & Implementation Steps
+## 🚀 How to Run
 
-### Step 1: Automatic Grade & Standing Evaluation Logic
-Whenever a teacher adds or edits a student's marks, the backend automatically evaluates the academic standing:
-```javascript
-function calculatePerformance(marks, attendance) {
-  const { webTech = 0, databaseSystems = 0, computerNetworks = 0, dataStructures = 0 } = marks;
-  const total = webTech + db + cn + ds;
-  const percentage = Number((total / 4).toFixed(1));
-
-  let grade = 'F', status = 'Pass';
-  if (webTech < 40 || db < 40 || cn < 40 || ds < 40) {
-    status = 'Fail';
-    grade = 'F';
-  } else if (percentage >= 85) grade = 'A+';
-  else if (percentage >= 75) grade = 'A';
-  else if (percentage >= 60) grade = 'B';
-  else if (percentage >= 50) grade = 'C';
-  else if (percentage >= 40) grade = 'D';
-  else {
-    grade = 'F';
-    status = 'Fail';
-  }
-  return { marks: { webTech, databaseSystems, computerNetworks, dataStructures }, totalMarks: total, percentage, grade, status };
-}
-```
-
-### Step 2: Unique Constraint on Roll Numbers
-In MongoDB:
-```javascript
-const studentSchema = new mongoose.Schema({
-  rollNo: { type: String, required: true, unique: true, uppercase: true, trim: true },
-  ...
-});
-```
-This guarantees duplicate roll numbers are rejected with HTTP 409 Conflict.
-
----
-
-## 3. How to Run
+### Method 1: Quick 2-Step Run (Recommended for Exams)
+Run both frontend and backend seamlessly together on **Port 5006**:
 
 ```bash
-# 1. Enter folder
+# Step 1: Navigate to the question folder
 cd Q6_Teacher_Student_Dashboard_Roll_61-67
 
-# 2. Install dependencies
+# Step 2: Install dependencies (optional if node_modules is pre-installed)
 npm install
 
-# 3. Start server
+# Step 3: Start the full-stack application
+npm start
+# (or: npm run dev)
+```
+
+Now open your browser at:
+👉 **`http://localhost:5006`**
+
+---
+
+### Method 2: Running Frontend & Backend Separately
+
+#### 1. Start the Backend Server:
+```bash
+cd backend
+npm install
 npm start
 ```
+*Backend runs at `http://localhost:5006` serving REST API endpoints on `/api/...`.*
 
-### Access Application
-Open:
-```
-http://localhost:5006
-```
-
----
-
-## 4. API Endpoints Table
-
-| Method | Endpoint | Description | Sample Query / Body |
-|---|---|---|---|
-| `GET` | `/api/students` | List all students | `?search=aarav` |
-| `GET` | `/api/students/report/:rollNo` | Get student report card | None |
-| `GET` | `/api/analytics` | Get class statistics | None |
-| `POST` | `/api/students` | Teacher adds student | `{ rollNo, name, email, attendance, marks }` |
-| `PUT` | `/api/students/:id` | Teacher updates student | `{ name, email, attendance, marks }` |
-| `DELETE` | `/api/students/:id` | Remove student record | None |
+#### 2. Open the Frontend:
+- Open `frontend/index.html` directly in your browser, **OR**
+- Run a live server in the `frontend` folder:
+  ```bash
+  cd frontend
+  npx serve . -p 3000
+  ```
+*The frontend automatically connects to `http://localhost:5006/api` with CORS enabled!*
 
 ---
 
-## 5. Viva Voce Q&A
+## 🗄️ MongoDB Native Driver Details
+- **Driver:** Official `mongodb` Node.js driver (`MongoClient`, `ObjectId`)
+- **Connection URI:** `mongodb://127.0.0.1:27017`
+- **Database Name:** `gradebook_db`
+- **Collections:** `students`
+- **Offline Fallback:** If MongoDB is not running locally in your lab, the server automatically saves data to `data_fallback.json`. You will never get an unhandled database crash!
 
-1. **Q: Why should `rollNo` have a unique index in MongoDB?**
-   * *Ans*: A student's roll number is a natural business key. An index with `{ unique: true }` prevents duplicate insertions at the database engine level and accelerates lookup speeds for report cards.
-2. **Q: How does Express calculate class performance analytics?**
-   * *Ans*: It computes aggregate metrics like average percentage, pass rate, and identifies the topper using JavaScript `reduce()` or MongoDB's `$group` / `$avg` aggregation pipeline.
+---
+
+## 🔌 API Endpoints
+All API routes are served under `/api`:
+- Accessible locally at: `http://localhost:5006/api/...`
+- Test with curl or browser to verify backend responses.

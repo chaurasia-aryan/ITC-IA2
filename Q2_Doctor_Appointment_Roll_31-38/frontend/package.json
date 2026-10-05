@@ -1,0 +1,10 @@
+{
+  "name": "q2-doctor-appointment-roll-31-38-frontend",
+  "version": "1.0.0",
+  "description": "React 18 Frontend for Doctor Appointment Scheduling Web App",
+  "scripts": {
+    "start": "npx serve . -p 3000",
+    "dev": "npx serve . -p 3000"
+  },
+  "license": "MIT"
+}

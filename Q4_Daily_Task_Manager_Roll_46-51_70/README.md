@@ -1,114 +1,88 @@
-# Question 4: Daily Task Management Web Application (Roll Numbers: 46 to 51, and 70)
-
-## Problem Statement
-> **Build a web app where users can create, update, and delete their daily tasks. Store all tasks in a MongoDB database and manage routes using Express and Node.**
+# Daily Task Manager Application
+> **Roll Numbers:** 46 to 51, 70  
+> **Backend Port:** `5004`  
+> **Database:** MongoDB (`task_manager`) via Native `MongoClient` Driver (with Offline JSON Fallback)  
+> **Frontend:** React 18 (Component State, Hooks, Modern UI)
 
 ---
 
-## 1. System Architecture & Flow
+## 📌 Problem Statement
+Full task CRUD with status toggles (Pending, In Progress, Completed), priority tagging, and category filters.
+
+---
+
+## 📁 Architecture (Separated Frontend & Backend)
+
 ```
-+---------------------------------------------------------------------------------+
-|                                 FRONTEND DASHBOARD                              |
-|  - Real-Time Stats Bar: Total Tasks, Pending, In Progress, Completed Counts     |
-|  - Add Task Form: Title, Description, Priority (Low/Med/High), Due Date         |
-|  - Filter Tabs: Filter by Status (All / Pending / In Progress / Completed)      |
-|  - Interactive Checklist: 1-click status toggle, Edit Modal, Delete             |
-+---------------------------------------------------------------------------------+
-                                         |
-                                 HTTP REST API (JSON)
-                                         v
-+---------------------------------------------------------------------------------+
-|                               EXPRESS BACKEND ROUTES                            |
-|  - GET    /api/tasks          -> List tasks with status/priority filtering      |
-|  - GET    /api/tasks/stats    -> Aggregate counts for status badges             |
-|  - POST   /api/tasks          -> Create new daily task                          |
-|  - PUT    /api/tasks/:id      -> Edit task details                              |
-|  - PATCH  /api/tasks/:id/toggle -> Quick status toggle (Pending <-> Completed)  |
-|  - DELETE /api/tasks/:id      -> Delete task                                    |
-+---------------------------------------------------------------------------------+
-                                         |
-                                  Mongoose Driver
-                                         v
-+---------------------------------------------------------------------------------+
-|                                 MONGODB DATABASE                                |
-|  - Collection 'tasks': { title, description, priority, status, dueDate }        |
-|  - Automatic Fallback: Local JSON storage if MongoDB daemon is offline.         |
-+---------------------------------------------------------------------------------+
+Q4_Daily_Task_Manager_Roll_46-51_70/
+├── backend/
+│   ├── server.js              # Node.js + Express API + MongoClient Native Driver
+│   ├── package.json           # Backend dependencies (express, cors, mongodb)
+│   └── data_fallback.json     # Automatic offline data persistence store
+├── frontend/
+│   ├── index.html             # HTML entry point (React 18 + Babel)
+│   ├── app.jsx                # React 18 component hierarchy, state & API calls
+│   ├── style.css              # Responsive modern CSS styling
+│   └── package.json           # Frontend helper scripts
+├── package.json               # Root scripts to run the entire app in 1 command
+└── README.md                  # This step-by-step documentation
 ```
 
 ---
 
-## 2. Key Technical Concepts & Implementation Steps
+## 🚀 How to Run
 
-### Step 1: Task Schema with Mongoose
-```javascript
-const taskSchema = new mongoose.Schema({
-  title: { type: String, required: true, trim: true },
-  description: { type: String, default: '' },
-  priority: { type: String, enum: ['Low', 'Medium', 'High'], default: 'Medium' },
-  status: { type: String, enum: ['Pending', 'In Progress', 'Completed'], default: 'Pending' },
-  dueDate: { type: String, required: true }
-}, { timestamps: true });
-```
-
-### Step 2: RESTful Express Routing
-- **Quick Status Toggle (`PATCH /api/tasks/:id/toggle`)**:
-  ```javascript
-  app.patch('/api/tasks/:id/toggle', async (req, res) => {
-    const task = await TaskModel.findById(req.params.id);
-    task.status = task.status === 'Completed' ? 'Pending' : 'Completed';
-    await task.save();
-    res.json(task);
-  });
-  ```
-- **Filter and Search Query**:
-  ```javascript
-  const filter = {};
-  if (status && status !== 'All') filter.status = status;
-  if (priority && priority !== 'All') filter.priority = priority;
-  if (search) filter.title = { $regex: search, $options: 'i' };
-  const tasks = await TaskModel.find(filter).sort({ createdAt: -1 });
-  ```
-
----
-
-## 3. How to Run
+### Method 1: Quick 2-Step Run (Recommended for Exams)
+Run both frontend and backend seamlessly together on **Port 5004**:
 
 ```bash
-# 1. Enter folder
+# Step 1: Navigate to the question folder
 cd Q4_Daily_Task_Manager_Roll_46-51_70
 
-# 2. Install dependencies
+# Step 2: Install dependencies (optional if node_modules is pre-installed)
 npm install
 
-# 3. Start server
+# Step 3: Start the full-stack application
+npm start
+# (or: npm run dev)
+```
+
+Now open your browser at:
+👉 **`http://localhost:5004`**
+
+---
+
+### Method 2: Running Frontend & Backend Separately
+
+#### 1. Start the Backend Server:
+```bash
+cd backend
+npm install
 npm start
 ```
+*Backend runs at `http://localhost:5004` serving REST API endpoints on `/api/...`.*
 
-### Access Application
-Open:
-```
-http://localhost:5004
-```
-
----
-
-## 4. API Endpoints Table
-
-| Method | Endpoint | Description | Query / Body Params |
-|---|---|---|---|
-| `GET` | `/api/tasks` | List tasks | `?status=Pending&priority=High` |
-| `GET` | `/api/tasks/stats` | Counts summary | None |
-| `POST` | `/api/tasks` | Create task | `{ title, dueDate, priority, description }` |
-| `PUT` | `/api/tasks/:id` | Update task | `{ title, description, priority, status, dueDate }` |
-| `PATCH` | `/api/tasks/:id/toggle` | Fast toggle status | None |
-| `DELETE` | `/api/tasks/:id` | Remove task | None |
+#### 2. Open the Frontend:
+- Open `frontend/index.html` directly in your browser, **OR**
+- Run a live server in the `frontend` folder:
+  ```bash
+  cd frontend
+  npx serve . -p 3000
+  ```
+*The frontend automatically connects to `http://localhost:5004/api` with CORS enabled!*
 
 ---
 
-## 5. Viva Voce Q&A
+## 🗄️ MongoDB Native Driver Details
+- **Driver:** Official `mongodb` Node.js driver (`MongoClient`, `ObjectId`)
+- **Connection URI:** `mongodb://127.0.0.1:27017`
+- **Database Name:** `task_manager`
+- **Collections:** `tasks`
+- **Offline Fallback:** If MongoDB is not running locally in your lab, the server automatically saves data to `data_fallback.json`. You will never get an unhandled database crash!
 
-1. **Q: What is the semantic difference between `PUT` and `PATCH`?**
-   * *Ans*: `PUT` replaces the entire resource representation with the payload provided, whereas `PATCH` applies partial modifications to an existing resource (such as toggling just the `status` field).
-2. **Q: How does Mongoose schema validation protect the database?**
-   * *Ans*: It enforces constraints such as `required: true` and `enum: [...]` before emitting insert or update commands to MongoDB, rejecting invalid documents with clear error messages.
+---
+
+## 🔌 API Endpoints
+All API routes are served under `/api`:
+- Accessible locally at: `http://localhost:5004/api/...`
+- Test with curl or browser to verify backend responses.

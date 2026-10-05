@@ -1,35 +1,26 @@
 {
-  "name": "team-member-directory-q2",
-  "private": true,
+  "name": "q8-team-member-directory",
   "version": "1.0.0",
-  "type": "module",
-  "description": "Team Member Directory using React and Vite with reusable components and props",
+  "description": "Team Member Directory (Reusable React Components) (Rolls Special Roll / Syllabus Q2) - Express + React 18 + MongoDB Native MongoClient",
+  "main": "backend/server.js",
   "scripts": {
-    "dev": "node server.js",
-    "build": "vite build",
-    "preview": "vite preview",
-    "start": "node server.js"
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "backend": "cd backend && npm start",
+    "frontend": "cd frontend && npm start"
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "mongodb": "^6.20.0",
-    "mongoose": "^8.3.1"
-  },
-  "devDependencies": {
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "vite": "^5.2.0"
+    "mongodb": "^6.20.0"
   },
   "keywords": [
+    "express",
     "react",
-    "vite",
-    "components",
-    "props",
-    "directory"
+    "mongodb",
+    "mongoclient",
+    "ost-ia2"
   ],
-  "author": "OST Lab IA-2"
+  "author": "Aryan Chaurasia",
+  "license": "MIT"
 }

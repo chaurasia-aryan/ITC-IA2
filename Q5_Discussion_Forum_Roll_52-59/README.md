@@ -1,143 +1,88 @@
-# Question 5: Discussion Threads & Forum (Roll Numbers: 52 to 59)
-
-## Problem Statement
-> **Build a web platform where users can create posts, comment, edit, and delete their own content within discussion threads. Use MongoDB to store posts, comments, and user profiles, Express.js for backend routing, and React (with Context API) for frontend state management.**
+# Discussion Forum with React Context API
+> **Roll Numbers:** 52 to 59  
+> **Backend Port:** `5005`  
+> **Database:** MongoDB (`discussion_forum`) via Native `MongoClient` Driver (with Offline JSON Fallback)  
+> **Frontend:** React 18 (Component State, Hooks, Modern UI)
 
 ---
 
-## 1. System Architecture & Flow
+## 📌 Problem Statement
+Create forum posts, reply, upvote, and delete own posts. Global state managed via React Context API (ForumContext) with user ownership validation.
+
+---
+
+## 📁 Architecture (Separated Frontend & Backend)
+
 ```
-+---------------------------------------------------------------------------------+
-|                         FRONTEND (React with Context API)                       |
-|  - ForumProvider (State & Dispatch Contexts): Centralized state for posts,     |
-|    comments, current active user profile, and category filters.                |
-|  - Ownership Controls: Edit/Delete buttons conditionally rendered based on      |
-|    currentUser.username === post.author.username.                              |
-|  - Thread Detail Modal: Live comments thread with nested add/delete comment.    |
-+---------------------------------------------------------------------------------+
-                                         |
-                                 HTTP REST API (JSON)
-                               (Headers: x-user: username)
-                                         v
-+---------------------------------------------------------------------------------+
-|                               EXPRESS BACKEND ROUTES                            |
-|  - GET    /api/users                        -> List available user profiles     |
-|  - GET    /api/posts                        -> List posts (with search/category)|
-|  - GET    /api/posts/:id                    -> Post details + all comments      |
-|  - POST   /api/posts                        -> Create new discussion post       |
-|  - PUT    /api/posts/:id                    -> Edit own post (Ownership check)  |
-|  - DELETE /api/posts/:id                    -> Delete own post & comments       |
-|  - POST   /api/posts/:id/comments           -> Add comment to thread            |
-|  - DELETE /api/posts/:id/comments/:commentId -> Delete own comment              |
-|  - POST   /api/posts/:id/upvote             -> Increment upvote counter         |
-+---------------------------------------------------------------------------------+
-                                         |
-                                  Mongoose Driver
-                                         v
-+---------------------------------------------------------------------------------+
-|                                 MONGODB DATABASE                                |
-|  - Collections: 'userprofiles', 'posts', 'comments'                             |
-|  - Automatic Fallback: Local JSON storage if MongoDB daemon is offline.         |
-+---------------------------------------------------------------------------------+
+Q5_Discussion_Forum_Roll_52-59/
+├── backend/
+│   ├── server.js              # Node.js + Express API + MongoClient Native Driver
+│   ├── package.json           # Backend dependencies (express, cors, mongodb)
+│   └── data_fallback.json     # Automatic offline data persistence store
+├── frontend/
+│   ├── index.html             # HTML entry point (React 18 + Babel)
+│   ├── app.jsx                # React 18 component hierarchy, state & API calls
+│   ├── style.css              # Responsive modern CSS styling
+│   └── package.json           # Frontend helper scripts
+├── package.json               # Root scripts to run the entire app in 1 command
+└── README.md                  # This step-by-step documentation
 ```
 
 ---
 
-## 2. Key Technical Concepts & Implementation Steps
+## 🚀 How to Run
 
-### Step 1: MongoDB Schemas (`UserProfile`, `Post`, `Comment`)
-- **Post Schema**:
-  ```javascript
-  const postSchema = new mongoose.Schema({
-    title: { type: String, required: true, trim: true },
-    content: { type: String, required: true },
-    category: { type: String, default: 'General' },
-    author: {
-      username: { type: String, required: true },
-      name: { type: String, required: true },
-      avatar: { type: String, default: '👤' }
-    },
-    upvotes: { type: Number, default: 0 },
-    commentsCount: { type: Number, default: 0 }
-  }, { timestamps: true });
-  ```
-- **Comment Schema**:
-  ```javascript
-  const commentSchema = new mongoose.Schema({
-    postId: { type: String, required: true },
-    author: {
-      username: { type: String, required: true },
-      name: { type: String, required: true },
-      avatar: { type: String, default: '👤' }
-    },
-    content: { type: String, required: true }
-  }, { timestamps: true });
-  ```
-
-### Step 2: Content Ownership Verification on Backend
-To guarantee that users can only mutate their own content, the server checks the author username:
-```javascript
-app.put('/api/posts/:id', async (req, res) => {
-  const post = await PostModel.findById(req.params.id);
-  const currentUser = req.headers['x-user'];
-
-  if (post.author.username !== currentUser) {
-    return res.status(403).json({ error: 'Forbidden: You can only edit your own posts.' });
-  }
-
-  post.title = req.body.title || post.title;
-  post.content = req.body.content || post.content;
-  await post.save();
-  res.json(post);
-});
-```
-
-### Step 3: React Context API Architecture
-Review `ReactContextSnippet.jsx` for the pure React implementation:
-1. `createContext()`: Defines `ForumStateContext` and `ForumDispatchContext`.
-2. `useReducer()`: Centralizes actions (`ADD_POST`, `UPDATE_POST`, `DELETE_POST`, `SET_USER`).
-3. Custom hooks: `useForumState()` and `useForumDispatch()` expose clean state and action methods across any nested component without prop drilling.
-
----
-
-## 3. How to Run
+### Method 1: Quick 2-Step Run (Recommended for Exams)
+Run both frontend and backend seamlessly together on **Port 5005**:
 
 ```bash
-# 1. Enter folder
+# Step 1: Navigate to the question folder
 cd Q5_Discussion_Forum_Roll_52-59
 
-# 2. Install dependencies
+# Step 2: Install dependencies (optional if node_modules is pre-installed)
 npm install
 
-# 3. Start server
+# Step 3: Start the full-stack application
+npm start
+# (or: npm run dev)
+```
+
+Now open your browser at:
+👉 **`http://localhost:5005`**
+
+---
+
+### Method 2: Running Frontend & Backend Separately
+
+#### 1. Start the Backend Server:
+```bash
+cd backend
+npm install
 npm start
 ```
+*Backend runs at `http://localhost:5005` serving REST API endpoints on `/api/...`.*
 
-### Access Application
-Open:
-```
-http://localhost:5005
-```
-
----
-
-## 4. API Endpoints Table
-
-| Method | Endpoint | Description | Headers & Body |
-|---|---|---|---|
-| `GET` | `/api/posts` | List threads | `?category=Frontend&search=react` |
-| `GET` | `/api/posts/:id` | Post details + comments | None |
-| `POST` | `/api/posts` | Create thread | `{ title, content, category, username }` |
-| `PUT` | `/api/posts/:id` | Edit own thread | Header: `x-user: username`, Body: `{ title, content }` |
-| `DELETE` | `/api/posts/:id` | Delete own thread | Header: `x-user: username` |
-| `POST` | `/api/posts/:id/comments` | Add comment | `{ content, username }` |
-| `DELETE` | `/api/posts/:id/comments/:cid` | Delete own comment | Header: `x-user: username` |
+#### 2. Open the Frontend:
+- Open `frontend/index.html` directly in your browser, **OR**
+- Run a live server in the `frontend` folder:
+  ```bash
+  cd frontend
+  npx serve . -p 3000
+  ```
+*The frontend automatically connects to `http://localhost:5005/api` with CORS enabled!*
 
 ---
 
-## 5. Viva Voce Q&A
+## 🗄️ MongoDB Native Driver Details
+- **Driver:** Official `mongodb` Node.js driver (`MongoClient`, `ObjectId`)
+- **Connection URI:** `mongodb://127.0.0.1:27017`
+- **Database Name:** `discussion_forum`
+- **Collections:** `posts`
+- **Offline Fallback:** If MongoDB is not running locally in your lab, the server automatically saves data to `data_fallback.json`. You will never get an unhandled database crash!
 
-1. **Q: Why use React Context API instead of passing props down?**
-   * *Ans*: In deeply nested applications (like posts -> comments -> reply form), passing state through intermediate components that don't need it ("prop drilling") creates maintenance bottlenecks. Context provides a direct broadcast channel.
-2. **Q: Why split State and Dispatch into two separate Contexts in React?**
-   * *Ans*: If State and Dispatch share one context, any component that only wants to dispatch an action will still re-render whenever the state updates. Splitting them optimizes component rendering performance.
+---
+
+## 🔌 API Endpoints
+All API routes are served under `/api`:
+- Accessible locally at: `http://localhost:5005/api/...`
+- Test with curl or browser to verify backend responses.

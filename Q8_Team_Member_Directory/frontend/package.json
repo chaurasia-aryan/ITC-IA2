@@ -1,0 +1,12 @@
+{
+  "name": "q8-team-member-directory-frontend",
+  "version": "1.0.0",
+  "description": "React 18 Frontend for Team Member Directory (Reusable React Components)",
+  "scripts": {
+    "start": "npx serve . -p 3000",
+    "dev": "npx serve . -p 3000",
+    "vite": "vite",
+    "build": "vite build"
+  },
+  "license": "MIT"
+}

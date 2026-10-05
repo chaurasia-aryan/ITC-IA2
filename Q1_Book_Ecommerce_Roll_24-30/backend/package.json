@@ -1,0 +1,16 @@
+{
+  "name": "q1-book-ecommerce-roll-24-30-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Book E-Commerce Web Application using Express & MongoDB Native Driver",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mongodb": "^6.20.0"
+  },
+  "license": "MIT"
+}

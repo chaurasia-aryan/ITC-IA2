@@ -1,0 +1,16 @@
+{
+  "name": "q5-discussion-forum-roll-52-59-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Discussion Forum with React Context API using Express & MongoDB Native Driver",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mongodb": "^6.20.0"
+  },
+  "license": "MIT"
+}

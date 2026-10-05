@@ -1,25 +1,26 @@
 {
-  "name": "daily-task-manager-roll-46-51-70",
+  "name": "q4-daily-task-manager-roll-46-51-70",
   "version": "1.0.0",
-  "description": "Daily Task Management Web Application with Express, Node.js and MongoDB CRUD routes",
-  "main": "server.js",
+  "description": "Daily Task Manager Application (Rolls 46 to 51, 70) - Express + React 18 + MongoDB Native MongoClient",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "backend": "cd backend && npm start",
+    "frontend": "cd frontend && npm start"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "mongoose": "^8.3.1",
     "mongodb": "^6.20.0"
   },
   "keywords": [
-    "task-manager",
-    "todo",
     "express",
+    "react",
     "mongodb",
-    "nodejs"
+    "mongoclient",
+    "ost-ia2"
   ],
-  "author": "OST Lab IA-2",
-  "license": "ISC"
+  "author": "Aryan Chaurasia",
+  "license": "MIT"
 }

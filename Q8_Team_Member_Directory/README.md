@@ -1,86 +1,88 @@
-# Question 8: Team Member Directory (React + Vite with Props) (Text Document Q2)
-
-## Problem Statement
-> **Create a team member directory web application where users can view details of multiple team members, including their name, profile photo, and job title. Use reusable React components and pass member details using props. Use React and Vite for building the frontend.**
+# Team Member Directory (Reusable React Components)
+> **Roll Numbers:** Special Roll / Syllabus Q2  
+> **Backend Port:** `5008`  
+> **Database:** MongoDB (`team_directory_db`) via Native `MongoClient` Driver (with Offline JSON Fallback)  
+> **Frontend:** React 18 (Component State, Hooks, Modern UI)
 
 ---
 
-## 1. System Architecture & Component Hierarchy
+## 📌 Problem Statement
+View team members with name, photo, job title, bio, and skills. Built with reusable React components passing member details via props (<Navbar />, <FilterBar />, <TeamCard />, <MemberModal />). Features both Vite setup and standalone execution.
+
+---
+
+## 📁 Architecture (Separated Frontend & Backend)
+
 ```
-                                 [ App.jsx ]
-                                      |
-     +-----------------+--------------+-----------------+------------------+
-     |                 |                                |                  |
-     v                 v                                v                  v
-[ Navbar.jsx ]   [ FilterBar.jsx ]             [ TeamCard.jsx ]     [ MemberModal.jsx ]
- props:            props:                         props: (Mapped)      props:
- - totalCount      - departments                  - member             - member
-                   - activeDept                   - onSelect           - onClose
-                   - onFilterChange
-                   - searchQuery
-                   - onSearchChange
+Q8_Team_Member_Directory/
+├── backend/
+│   ├── server.js              # Node.js + Express API + MongoClient Native Driver
+│   ├── package.json           # Backend dependencies (express, cors, mongodb)
+│   └── data_fallback.json     # Automatic offline data persistence store
+├── frontend/
+│   ├── index.html             # HTML entry point (React 18 + Babel)
+│   ├── app.jsx                # React 18 component hierarchy, state & API calls
+│   ├── style.css              # Responsive modern CSS styling
+│   └── package.json           # Frontend helper scripts
+├── package.json               # Root scripts to run the entire app in 1 command
+└── README.md                  # This step-by-step documentation
 ```
 
 ---
 
-## 2. Key Technical Concepts & Implementation Steps
+## 🚀 How to Run
 
-### Step 1: Reusable Component Principles
-1. **`TeamCard.jsx`**:
-   - Accepts `member` object as a prop and renders name, photo, job title, and department.
-   - Accepts `onSelect` callback prop to lift state up when a user clicks "View Full Profile".
-   ```jsx
-   export default function TeamCard({ member, onSelect }) {
-     const { name, jobTitle, department, photo } = member;
-     return (
-       <div className="member-card">
-         <img src={photo} alt={name} className="avatar-img" />
-         <div className="dept-tag">{department}</div>
-         <h3>{name}</h3>
-         <p>{jobTitle}</p>
-         <button onClick={() => onSelect(member)}>View Full Profile</button>
-       </div>
-     );
-   }
-   ```
+### Method 1: Quick 2-Step Run (Recommended for Exams)
+Run both frontend and backend seamlessly together on **Port 5008**:
 
-2. **`FilterBar.jsx`**:
-   - Pure presentational component that receives filter state and emits user interactions upwards through callbacks.
-
-3. **`MemberModal.jsx`**:
-   - Conditional popup overlay displaying deep biography, email, and skill badges.
-
----
-
-## 3. How to Run
-
-### Method A: Using Standard Vite Development Server (Recommended)
 ```bash
-# 1. Enter folder
+# Step 1: Navigate to the question folder
 cd Q8_Team_Member_Directory
 
-# 2. Install dependencies
+# Step 2: Install dependencies (optional if node_modules is pre-installed)
 npm install
 
-# 3. Start Vite dev server
-npm run dev
+# Step 3: Start the full-stack application
+npm start
+# (or: npm run dev)
 ```
-Vite will start at `http://localhost:5008` (configured in `vite.config.js`).
 
-### Method B: Using Standalone Preview Server (Zero Install Required)
-If you are running in an offline lab machine without internet access to download node_modules:
-```bash
-node preview_server.js
-```
-Open `http://localhost:5008` to evaluate the app immediately.
+Now open your browser at:
+👉 **`http://localhost:5008`**
 
 ---
 
-## 4. Viva Voce Q&A
+### Method 2: Running Frontend & Backend Separately
 
-1. **Q: What are `props` in React and why are they considered immutable (read-only)?**
-   * *Ans*: Props (short for properties) are the mechanism by which parent components pass data and callbacks down to child components. They are read-only to preserve unidirectional data flow, ensuring state mutations remain predictable and debuggable.
-2. **Q: Why is Vite significantly faster than Create-React-App (Webpack)?**
-   * *Ans*: Vite utilizes native ES Modules (ESM) in the browser during development and compiles code via esbuild (written in Go), eliminating the slow full-bundle step required by Webpack.
-3. **Q: How does `useMemo` optimize filtering performance?**
-   * *Ans*: `useMemo` caches the calculation of filtered members. It only recalculates when dependencies (`activeDept` or `searchQuery`) change, preventing expensive array iterations on unrelated re-renders.
+#### 1. Start the Backend Server:
+```bash
+cd backend
+npm install
+npm start
+```
+*Backend runs at `http://localhost:5008` serving REST API endpoints on `/api/...`.*
+
+#### 2. Open the Frontend:
+- Open `frontend/index.html` directly in your browser, **OR**
+- Run a live server in the `frontend` folder:
+  ```bash
+  cd frontend
+  npx serve . -p 3000
+  ```
+*The frontend automatically connects to `http://localhost:5008/api` with CORS enabled!*
+
+---
+
+## 🗄️ MongoDB Native Driver Details
+- **Driver:** Official `mongodb` Node.js driver (`MongoClient`, `ObjectId`)
+- **Connection URI:** `mongodb://127.0.0.1:27017`
+- **Database Name:** `team_directory_db`
+- **Collections:** `members`
+- **Offline Fallback:** If MongoDB is not running locally in your lab, the server automatically saves data to `data_fallback.json`. You will never get an unhandled database crash!
+
+---
+
+## 🔌 API Endpoints
+All API routes are served under `/api`:
+- Accessible locally at: `http://localhost:5008/api/...`
+- Test with curl or browser to verify backend responses.

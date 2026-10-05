@@ -1,0 +1,16 @@
+{
+  "name": "q8-team-member-directory-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Team Member Directory (Reusable React Components) using Express & MongoDB Native Driver",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mongodb": "^6.20.0"
+  },
+  "license": "MIT"
+}

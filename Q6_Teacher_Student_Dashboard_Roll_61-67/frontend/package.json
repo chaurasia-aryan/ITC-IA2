@@ -1,0 +1,10 @@
+{
+  "name": "q6-teacher-student-dashboard-roll-61-67-frontend",
+  "version": "1.0.0",
+  "description": "React 18 Frontend for Teacher / Student Dashboard & Gradebook",
+  "scripts": {
+    "start": "npx serve . -p 3000",
+    "dev": "npx serve . -p 3000"
+  },
+  "license": "MIT"
+}

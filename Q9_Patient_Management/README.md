@@ -1,119 +1,88 @@
-# Question 9: Patient Management Web Application (Text Document Q3)
-
-## Problem Statement
-> **Develop a patient management web application where users can add, view, and delete patient records containing details such as name, age, and medical condition. Use React for the frontend, Node.js and Express for the backend, and MongoDB for storing patient data. Implement REST API routes for managing patient records.**
+# Patient Management CRUD Application
+> **Roll Numbers:** Special Roll / Syllabus Q3  
+> **Backend Port:** `5009`  
+> **Database:** MongoDB (`patient_management_db`) via Native `MongoClient` Driver (with Offline JSON Fallback)  
+> **Frontend:** React 18 (Component State, Hooks, Modern UI)
 
 ---
 
-## 1. System Architecture & Flow
+## 📌 Problem Statement
+Complete REST API and UI to add, view, update, and delete patient records (Name, Age, Gender, Medical Condition, Admission Date, Status).
+
+---
+
+## 📁 Architecture (Separated Frontend & Backend)
+
 ```
-+---------------------------------------------------------------------------------+
-|                                 FRONTEND (React UI)                             |
-|  - Hospital Stat Cards: Total Patients, Admitted, Under Treatment, Discharged   |
-|  - Add Patient Form: Name, Age, Medical Diagnosis, Contact, Room/Ward, Date    |
-|  - Patient Directory Table: Real-time search by patient name or diagnosis,      |
-|    filter by admission status, Edit Modal, and Permanent Record Delete.         |
-+---------------------------------------------------------------------------------+
-                                         |
-                                 HTTP REST API (JSON)
-                                         v
-+---------------------------------------------------------------------------------+
-|                       EXPRESS BACKEND & VALIDATION MIDDLEWARE                   |
-|  - Routes:                                                                      |
-|      * GET    /api/patients        -> List patients (supports ?status & ?search)|
-|      * GET    /api/patients/stats  -> Dynamic admission statistics              |
-|      * GET    /api/patients/:id    -> Single patient profile                    |
-|      * POST   /api/patients        -> Register patient (name>=2, age>0, cond)   |
-|      * PUT    /api/patients/:id    -> Update patient details                    |
-|      * DELETE /api/patients/:id    -> Delete patient record                     |
-+---------------------------------------------------------------------------------+
-                                         |
-                                  Mongoose Driver
-                                         v
-+---------------------------------------------------------------------------------+
-|                                 MONGODB DATABASE                                |
-|  - Collection 'patients': { name, age, medicalCondition, contact,               |
-|                             admissionDate, roomNumber, status }                 |
-|  - Automatic Fallback: Local JSON storage if MongoDB daemon is offline.         |
-+---------------------------------------------------------------------------------+
+Q9_Patient_Management/
+├── backend/
+│   ├── server.js              # Node.js + Express API + MongoClient Native Driver
+│   ├── package.json           # Backend dependencies (express, cors, mongodb)
+│   └── data_fallback.json     # Automatic offline data persistence store
+├── frontend/
+│   ├── index.html             # HTML entry point (React 18 + Babel)
+│   ├── app.jsx                # React 18 component hierarchy, state & API calls
+│   ├── style.css              # Responsive modern CSS styling
+│   └── package.json           # Frontend helper scripts
+├── package.json               # Root scripts to run the entire app in 1 command
+└── README.md                  # This step-by-step documentation
 ```
 
 ---
 
-## 2. Key Technical Concepts & Implementation Steps
+## 🚀 How to Run
 
-### Step 1: Input Validation
-Enforces that name has at least 2 characters, age is a positive integer, and a medical diagnosis is provided:
-```javascript
-function validatePatient(req, res, next) {
-  const { name, age, medicalCondition } = req.body;
-  const errors = [];
-  if (!name || name.trim().length < 2) errors.push('Name must be at least 2 characters.');
-  if (age === undefined || Number(age) <= 0 || !Number.isInteger(Number(age))) {
-    errors.push('Age must be a positive whole integer.');
-  }
-  if (!medicalCondition || medicalCondition.trim().length === 0) {
-    errors.push('Medical condition / diagnosis is required.');
-  }
-  if (errors.length > 0) return res.status(400).json({ error: 'Validation Error', details: errors });
-  next();
-}
-```
-
-### Step 2: Mongoose Schema
-```javascript
-const patientSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true, minlength: 2 },
-  age: { type: Number, required: true, min: 1 },
-  medicalCondition: { type: String, required: true, trim: true },
-  contact: { type: String, default: '' },
-  admissionDate: { type: String, default: () => new Date().toISOString().split('T')[0] },
-  roomNumber: { type: String, default: 'General Ward' },
-  status: { type: String, enum: ['Admitted', 'Under Treatment', 'Discharged'], default: 'Admitted' }
-}, { timestamps: true });
-```
-
----
-
-## 3. How to Run
+### Method 1: Quick 2-Step Run (Recommended for Exams)
+Run both frontend and backend seamlessly together on **Port 5009**:
 
 ```bash
-# 1. Enter folder
+# Step 1: Navigate to the question folder
 cd Q9_Patient_Management
 
-# 2. Install dependencies
+# Step 2: Install dependencies (optional if node_modules is pre-installed)
 npm install
 
-# 3. Start server
+# Step 3: Start the full-stack application
+npm start
+# (or: npm run dev)
+```
+
+Now open your browser at:
+👉 **`http://localhost:5009`**
+
+---
+
+### Method 2: Running Frontend & Backend Separately
+
+#### 1. Start the Backend Server:
+```bash
+cd backend
+npm install
 npm start
 ```
+*Backend runs at `http://localhost:5009` serving REST API endpoints on `/api/...`.*
 
-### Access Application
-Open:
-```
-http://localhost:5009
-```
-
----
-
-## 4. API Endpoints Table
-
-| Method | Endpoint | Description | Validation Constraints |
-|---|---|---|---|
-| `GET` | `/api/patients` | List patients | Filter: `?status=Admitted&search=Hypertension` |
-| `GET` | `/api/patients/stats` | Counts by status | None |
-| `POST` | `/api/patients` | Register patient | `name` >= 2 chars, `age` > 0, `medicalCondition` |
-| `PUT` | `/api/patients/:id` | Update patient | Same as POST |
-| `DELETE` | `/api/patients/:id` | Remove patient | None |
+#### 2. Open the Frontend:
+- Open `frontend/index.html` directly in your browser, **OR**
+- Run a live server in the `frontend` folder:
+  ```bash
+  cd frontend
+  npx serve . -p 3000
+  ```
+*The frontend automatically connects to `http://localhost:5009/api` with CORS enabled!*
 
 ---
 
-## 5. Viva Voce Q&A
+## 🗄️ MongoDB Native Driver Details
+- **Driver:** Official `mongodb` Node.js driver (`MongoClient`, `ObjectId`)
+- **Connection URI:** `mongodb://127.0.0.1:27017`
+- **Database Name:** `patient_management_db`
+- **Collections:** `patients`
+- **Offline Fallback:** If MongoDB is not running locally in your lab, the server automatically saves data to `data_fallback.json`. You will never get an unhandled database crash!
 
-1. **Q: How does Express router sanitize and validate inputs before writing to MongoDB?**
-   * *Ans*: By employing custom middleware or libraries like `express-validator` that inspect `req.body` parameters, trimming strings, parsing numbers, and short-circuiting with HTTP 400 Bad Request if validation rules fail.
-2. **Q: How do you perform case-insensitive search across multiple fields in MongoDB?**
-   * *Ans*: Using the `$or` operator alongside `$regex` with `$options: 'i'`:
-     ```javascript
-     { $or: [ { name: { $regex: query, $options: 'i' } }, { medicalCondition: { $regex: query, $options: 'i' } } ] }
-     ```
+---
+
+## 🔌 API Endpoints
+All API routes are served under `/api`:
+- Accessible locally at: `http://localhost:5009/api/...`
+- Test with curl or browser to verify backend responses.

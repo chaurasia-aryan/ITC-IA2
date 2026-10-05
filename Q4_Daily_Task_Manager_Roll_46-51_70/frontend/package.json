@@ -1,0 +1,10 @@
+{
+  "name": "q4-daily-task-manager-roll-46-51-70-frontend",
+  "version": "1.0.0",
+  "description": "React 18 Frontend for Daily Task Manager Application",
+  "scripts": {
+    "start": "npx serve . -p 3000",
+    "dev": "npx serve . -p 3000"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "q1-book-ecommerce-roll-24-30-frontend",
+  "version": "1.0.0",
+  "description": "React 18 Frontend for Book E-Commerce Web Application",
+  "scripts": {
+    "start": "npx serve . -p 3000",
+    "dev": "npx serve . -p 3000"
+  },
+  "license": "MIT"
+}

@@ -1,25 +1,26 @@
 {
-  "name": "discussion-forum-roll-52-59",
+  "name": "q5-discussion-forum-roll-52-59",
   "version": "1.0.0",
-  "description": "Discussion Platform with Posts, Comments, and React Context API for state management using Express and MongoDB",
-  "main": "server.js",
+  "description": "Discussion Forum with React Context API (Rolls 52 to 59) - Express + React 18 + MongoDB Native MongoClient",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "backend": "cd backend && npm start",
+    "frontend": "cd frontend && npm start"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "mongoose": "^8.3.1",
     "mongodb": "^6.20.0"
   },
   "keywords": [
-    "discussion-forum",
-    "threads",
-    "react-context-api",
     "express",
-    "mongodb"
+    "react",
+    "mongodb",
+    "mongoclient",
+    "ost-ia2"
   ],
-  "author": "OST Lab IA-2",
-  "license": "ISC"
+  "author": "Aryan Chaurasia",
+  "license": "MIT"
 }

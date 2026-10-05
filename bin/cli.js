@@ -42,18 +42,6 @@ function extractZip(targetDir) {
   }
 
   let copied = false;
-  const topDirs = ['with_comments', 'without_comments', 'mongo_client'];
-
-  for (const d of topDirs) {
-    const src = path.join(PKG_ROOT, d);
-    const target = path.join(dest, d);
-    if (fs.existsSync(src)) {
-      fs.cpSync(src, target, { recursive: true });
-      copied = true;
-    }
-  }
-
-  // Also copy question folders if in root
   const subdirs = [
     'Q1_Book_Ecommerce_Roll_24-30',
     'Q2_Doctor_Appointment_Roll_31-38',
@@ -66,15 +54,13 @@ function extractZip(targetDir) {
     'Q9_Patient_Management'
   ];
 
-  if (!copied && fs.existsSync(path.join(PKG_ROOT, subdirs[0]))) {
-    for (const sub of subdirs) {
-      const src = path.join(PKG_ROOT, sub);
-      const target = path.join(dest, sub);
-      if (fs.existsSync(src)) {
-        fs.cpSync(src, target, { recursive: true });
-      }
+  for (const sub of subdirs) {
+    const src = path.join(PKG_ROOT, sub);
+    const target = path.join(dest, sub);
+    if (fs.existsSync(src)) {
+      fs.cpSync(src, target, { recursive: true });
+      copied = true;
     }
-    copied = true;
   }
 
   const extraFiles = ['README.md', 'RUN_GUIDE.md', 'OLLAMA_GUIDE.md', 'OST_Mock_Test_Solutions.zip', 'package.json'];
@@ -101,12 +87,14 @@ function extractZip(targetDir) {
   if (copied) {
     console.log(`\n Successfully extracted solutions to:`);
     console.log(`   ${dest}\n`);
-    console.log(`Folders included:`);
-    console.log(`   ├── with_comments/     (Full code with line-by-line pedagogical comments)`);
-    console.log(`   └── without_comments/  (Exact same code with all comments removed for exam submission)\n`);
+    console.log(`Structure per question:`);
+    console.log(`   ├── backend/   (Express API + MongoDB Native MongoClient)`);
+    console.log(`   ├── frontend/  (React 18 User Interface)`);
+    console.log(`   ├── README.md  (Step-by-step running instructions)`);
+    console.log(`   └── package.json\n`);
     console.log(`Next steps:`);
-    console.log(`   cd "${targetDir || 'ost-mock-test-solutions'}"`);
-    console.log(`   cat RUN_GUIDE.md\n`);
+    console.log(`   cd "${targetDir || 'ost-mock-test-solutions'}/Q1_Book_Ecommerce_Roll_24-30"`);
+    console.log(`   npm start\n`);
   } else {
     console.error(`Could not locate source files or zip.`);
   }
@@ -114,15 +102,15 @@ function extractZip(targetDir) {
 
 function runServer(qKey) {
   const map = {
-    q1: 'Q1_Book_Ecommerce_Roll_24-30/server.js',
-    q2: 'Q2_Doctor_Appointment_Roll_31-38/server.js',
-    q3: 'Q3_Expense_Tracker_Roll_39-45/server.js',
-    q4: 'Q4_Daily_Task_Manager_Roll_46-51_70/server.js',
-    q5: 'Q5_Discussion_Forum_Roll_52-59/server.js',
-    q6: 'Q6_Teacher_Student_Dashboard_Roll_61-67/server.js',
-    q7: 'Q7_Product_User_Management/server.js',
-    q8: 'Q8_Team_Member_Directory/server.js',
-    q9: 'Q9_Patient_Management/server.js',
+    q1: 'Q1_Book_Ecommerce_Roll_24-30/backend/server.js',
+    q2: 'Q2_Doctor_Appointment_Roll_31-38/backend/server.js',
+    q3: 'Q3_Expense_Tracker_Roll_39-45/backend/server.js',
+    q4: 'Q4_Daily_Task_Manager_Roll_46-51_70/backend/server.js',
+    q5: 'Q5_Discussion_Forum_Roll_52-59/backend/server.js',
+    q6: 'Q6_Teacher_Student_Dashboard_Roll_61-67/backend/server.js',
+    q7: 'Q7_Product_User_Management/backend/server.js',
+    q8: 'Q8_Team_Member_Directory/backend/server.js',
+    q9: 'Q9_Patient_Management/backend/server.js',
   };
 
   const scriptRel = map[qKey];
@@ -131,10 +119,7 @@ function runServer(qKey) {
     return;
   }
 
-  let scriptPath = path.join(PKG_ROOT, scriptRel);
-  if (!fs.existsSync(scriptPath)) {
-    scriptPath = path.join(PKG_ROOT, 'with_comments', scriptRel);
-  }
+  const scriptPath = path.join(PKG_ROOT, scriptRel);
 
   console.log(`Starting ${qKey.toUpperCase()} (${scriptPath})...\n`);
   const child = spawn(process.execPath, [scriptPath], {
