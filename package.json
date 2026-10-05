@@ -1,8 +1,31 @@
 {
-  "name": "ost-lab-exam-ia2-master",
+  "name": "ost-ia2-solutions",
   "version": "1.0.0",
-  "description": "Master package for OST / Web Programming Lab IA-2 Mock Test Solutions",
+  "description": "Complete mock test solutions (Q1-Q9), Ollama extraction toolkit, and self-contained project zip for OST / Web Programming Lab IA-2",
+  "main": "bin/cli.js",
+  "bin": {
+    "ost-mock-test": "./bin/cli.js",
+    "ost-ia2": "./bin/cli.js"
+  },
+  "files": [
+    "OST_Mock_Test_Solutions.zip",
+    "bin",
+    "README.md",
+    "OLLAMA_GUIDE.md",
+    "extract_code.py",
+    "query_ollama.js",
+    "Q1_Book_Ecommerce_Roll_24-30",
+    "Q2_Doctor_Appointment_Roll_31-38",
+    "Q3_Expense_Tracker_Roll_39-45",
+    "Q4_Daily_Task_Manager_Roll_46-51_70",
+    "Q5_Discussion_Forum_Roll_52-59",
+    "Q6_Teacher_Student_Dashboard_Roll_61-67",
+    "Q7_Product_User_Management",
+    "Q8_Team_Member_Directory",
+    "Q9_Patient_Management"
+  ],
   "scripts": {
+    "start": "node bin/cli.js",
     "q1": "node Q1_Book_Ecommerce_Roll_24-30/server.js",
     "q2": "node Q2_Doctor_Appointment_Roll_31-38/server.js",
     "q3": "node Q3_Expense_Tracker_Roll_39-45/server.js",
@@ -13,6 +36,27 @@
     "q8": "node Q8_Team_Member_Directory/preview_server.js",
     "q9": "node Q9_Patient_Management/server.js"
   },
+  "keywords": [
+    "ost",
+    "web-programming",
+    "ia2",
+    "mock-test",
+    "express",
+    "react",
+    "mongodb",
+    "ollama",
+    "qwen2.5-coder"
+  ],
+  "author": "Aryan Chaurasia <chaurasiaaryan1980@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chaurasia-aryan/ITC-IA2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chaurasia-aryan/ITC-IA2/issues"
+  },
+  "homepage": "https://github.com/chaurasia-aryan/ITC-IA2#readme",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
