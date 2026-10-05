@@ -38,7 +38,8 @@
     "q6": "node Q6_Teacher_Student_Dashboard_Roll_61-67/server.js",
     "q7": "node Q7_Product_User_Management/server.js",
     "q8": "node Q8_Team_Member_Directory/server.js",
-    "q9": "node Q9_Patient_Management/server.js"
+    "q9": "node Q9_Patient_Management/server.js",
+    "dev": "node bin/cli.js"
   },
   "keywords": [
     "ost",
