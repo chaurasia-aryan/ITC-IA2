@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareSync - Patient Management System (Q3)</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <header class="navbar">
+      <div class="nav-container">
+        <div class="brand">
+          <span class="brand-icon">🏥</span>
+          <span class="brand-title">Care<strong>Sync</strong> Patient Portal</span>
+        </div>
+        <div class="nav-badge">
+          OST Lab IA-2: Question 3
+        </div>
+      </div>
+    </header>
+
+    <main class="content-container">
+      <!-- Status Counters -->
+      <section class="stats-row">
+        <div class="stat-card">
+          <span class="stat-label">Total Patients</span>
+          <div class="stat-val" id="statTotal">0</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Admitted</span>
+          <div class="stat-val" id="statAdmitted" style="color: #38bdf8;">0</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Under Treatment</span>
+          <div class="stat-val" id="statTreating" style="color: var(--warning);">0</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Discharged</span>
+          <div class="stat-val" id="statDischarged" style="color: var(--success);">0</div>
+        </div>
+      </section>
+
+      <div class="grid-layout">
+        <!-- Add Patient Form -->
+        <div class="card">
+          <h3 class="card-title">Register New Patient</h3>
+          <div id="patientValidationAlert" class="alert-box error" style="display: none;"></div>
+          <form id="addPatientForm" onsubmit="handleAddPatient(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Patient Full Name *</label>
+                <input type="text" id="patName" class="form-control" required placeholder="e.g. Ramesh K. Patel" />
+              </div>
+              <div class="form-group">
+                <label>Age * (Years)</label>
+                <input type="number" id="patAge" class="form-control" required min="1" max="120" placeholder="42" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Medical Condition / Primary Diagnosis *</label>
+              <input type="text" id="patCondition" class="form-control" required placeholder="e.g. Acute Appendicitis / Hypertension" />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Contact Phone</label>
+                <input type="tel" id="patContact" class="form-control" placeholder="9876543210" />
+              </div>
+              <div class="form-group">
+                <label>Assigned Room / Ward</label>
+                <input type="text" id="patRoom" class="form-control" placeholder="e.g. Ward 3B, Bed 4" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Admission Date *</label>
+                <input type="date" id="patAdmissionDate" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label>Current Status</label>
+                <select id="patStatus" class="form-control">
+                  <option value="Admitted">Admitted</option>
+                  <option value="Under Treatment">Under Treatment</option>
+                  <option value="Discharged">Discharged</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 8px;">
+              + Admit Patient & Save to MongoDB
+            </button>
+          </form>
+        </div>
+
+        <!-- Patients Directory Table -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <h3 class="card-title" style="margin-bottom: 0;">Patient Directory</h3>
+            <div style="display: flex; gap: 8px;">
+              <select id="statusFilter" class="form-control" style="width: auto;" onchange="loadPatients()">
+                <option value="All">All Statuses</option>
+                <option value="Admitted">Admitted</option>
+                <option value="Under Treatment">Under Treatment</option>
+                <option value="Discharged">Discharged</option>
+              </select>
+              <input type="text" id="searchPatient" class="form-control" placeholder="Search name or diagnosis..." style="max-width: 180px;" oninput="onSearchPatient(this.value)" />
+            </div>
+          </div>
+
+          <div style="max-height: 520px; overflow-y: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Patient</th>
+                  <th>Age</th>
+                  <th>Diagnosis</th>
+                  <th>Ward</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="patientTableBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Edit Patient Modal -->
+    <div id="editPatientModal" class="modal">
+      <div class="modal-box">
+        <h3 style="margin-bottom: 16px;">Update Patient Record</h3>
+        <form id="editPatientForm" onsubmit="handleUpdatePatient(event)">
+          <input type="hidden" id="editPatId" />
+          <div class="form-row">
+            <div class="form-group">
+              <label>Name</label>
+              <input type="text" id="editPatName" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label>Age</label>
+              <input type="number" id="editPatAge" class="form-control" required min="1" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Diagnosis / Condition</label>
+            <input type="text" id="editPatCondition" class="form-control" required />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Contact</label>
+              <input type="tel" id="editPatContact" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label>Room / Ward</label>
+              <input type="text" id="editPatRoom" class="form-control" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Admission Date</label>
+              <input type="date" id="editPatDate" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select id="editPatStatus" class="form-control">
+                <option value="Admitted">Admitted</option>
+                <option value="Under Treatment">Under Treatment</option>
+                <option value="Discharged">Discharged</option>
+              </select>
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+            <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Update Record</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <footer class="footer">
+      <p>OST Lab IA-2 (Question 3) | Stack: React + Node.js Express REST APIs + MongoDB Database</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

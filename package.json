@@ -1,0 +1,21 @@
+{
+  "name": "ost-lab-exam-ia2-master",
+  "version": "1.0.0",
+  "description": "Master package for OST / Web Programming Lab IA-2 Mock Test Solutions",
+  "scripts": {
+    "q1": "node Q1_Book_Ecommerce_Roll_24-30/server.js",
+    "q2": "node Q2_Doctor_Appointment_Roll_31-38/server.js",
+    "q3": "node Q3_Expense_Tracker_Roll_39-45/server.js",
+    "q4": "node Q4_Daily_Task_Manager_Roll_46-51_70/server.js",
+    "q5": "node Q5_Discussion_Forum_Roll_52-59/server.js",
+    "q6": "node Q6_Teacher_Student_Dashboard_Roll_61-67/server.js",
+    "q7": "node Q7_Product_User_Management/server.js",
+    "q8": "node Q8_Team_Member_Directory/preview_server.js",
+    "q9": "node Q9_Patient_Management/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.1"
+  }
+}

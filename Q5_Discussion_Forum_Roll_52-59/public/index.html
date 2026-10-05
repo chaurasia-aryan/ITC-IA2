@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevThreads - Community Discussion Platform (Roll 52-59)</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <header class="navbar">
+      <div class="nav-container">
+        <div class="brand" onclick="goHome()">
+          <span class="brand-icon">💬</span>
+          <span class="brand-title">Dev<strong>Threads</strong></span>
+        </div>
+
+        <!-- Active User Profile Switcher (Tests Ownership Control) -->
+        <div class="user-switcher-box">
+          <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 700;">Simulated User:</label>
+          <select id="activeUserSelect" class="user-select" onchange="onUserChange(this.value)">
+            <!-- Populated from /api/users -->
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-container">
+      <div class="forum-layout">
+        <!-- Main Thread Stream -->
+        <div class="feed-column">
+          <!-- Create Post Trigger Card -->
+          <div class="card create-post-card">
+            <h3 style="font-size: 1.1rem; margin-bottom: 14px;">Start a New Discussion</h3>
+            <form id="newPostForm" onsubmit="handleCreatePost(event)">
+              <div class="form-group">
+                <input type="text" id="postTitle" class="form-control" placeholder="Discussion title / question *" required />
+              </div>
+              <div class="form-group">
+                <textarea id="postContent" class="form-control" rows="3" placeholder="What are your thoughts or code questions? *" required></textarea>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                <select id="postCategory" class="form-control" style="width: auto;">
+                  <option value="General">General</option>
+                  <option value="Frontend">Frontend</option>
+                  <option value="Backend">Backend</option>
+                  <option value="Databases">Databases</option>
+                </select>
+                <button type="submit" class="btn btn-primary">+ Publish Thread</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Feed Filter Bar -->
+          <div class="feed-filter">
+            <div class="cat-pills">
+              <button class="pill-btn active" onclick="setCategoryFilter('All', this)">All Topics</button>
+              <button class="pill-btn" onclick="setCategoryFilter('Frontend', this)">Frontend</button>
+              <button class="pill-btn" onclick="setCategoryFilter('Backend', this)">Backend</button>
+              <button class="pill-btn" onclick="setCategoryFilter('Databases', this)">Databases</button>
+            </div>
+            <input type="text" id="searchPosts" class="form-control" placeholder="Search threads..." style="max-width: 220px;" oninput="onSearchPosts(this.value)" />
+          </div>
+
+          <!-- Thread Stream / List -->
+          <div id="postsFeed" class="posts-list">
+            Loading discussions...
+          </div>
+        </div>
+
+        <!-- Sidebar Info -->
+        <aside class="sidebar-column">
+          <div class="card">
+            <h4 style="margin-bottom: 12px; font-size: 1rem;">React Context API State</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+              This UI is managed by a centralized <strong>ForumContext</strong> mirroring React's Context Provider.
+            </p>
+            <div style="background: #0f172a; padding: 12px; border-radius: 8px; font-size: 0.8rem; border: 1px solid var(--border-color);">
+              <div>Active Profile: <strong id="debugProfile" style="color: #38bdf8;">--</strong></div>
+              <div>State Posts Count: <strong id="debugCount">0</strong></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 20px;">
+            <h4 style="margin-bottom: 8px; font-size: 1rem;">Content Ownership</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+              Notice the <strong>Edit</strong> and <strong>Delete</strong> buttons appear <em>only</em> on posts and comments created by the currently selected user profile!
+            </p>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <!-- Thread Detail & Comments Modal -->
+    <div id="threadModal" class="modal">
+      <div class="modal-box modal-wide">
+        <div id="threadModalContent">Loading thread...</div>
+      </div>
+    </div>
+
+    <!-- Edit Post Modal -->
+    <div id="editPostModal" class="modal">
+      <div class="modal-box">
+        <h3 style="margin-bottom: 16px;">Edit Discussion Post</h3>
+        <form id="editPostForm" onsubmit="handleUpdatePost(event)">
+          <input type="hidden" id="editPostId" />
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="editPostTitle" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label>Content</label>
+            <textarea id="editPostContent" class="form-control" rows="4" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="editPostCategory" class="form-control">
+              <option value="General">General</option>
+              <option value="Frontend">Frontend</option>
+              <option value="Backend">Backend</option>
+              <option value="Databases">Databases</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+            <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Updates</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <footer class="footer">
+      <p>OST Lab IA-2 (Roll No: 52 to 59) | Stack: React Context API + Express REST API + MongoDB Storage</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

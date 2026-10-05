@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduTrack - Teacher & Student Performance Dashboard (Roll 61-67)</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <header class="navbar">
+      <div class="nav-container">
+        <div class="brand">
+          <span class="brand-icon">🎓</span>
+          <span class="brand-title">Edu<strong>Track</strong></span>
+        </div>
+        <div class="portal-toggle">
+          <button class="toggle-btn active" id="btn-teacher-view" onclick="switchPortal('teacher')">👩‍🏫 Teacher Portal</button>
+          <button class="toggle-btn" id="btn-student-view" onclick="switchPortal('student')">👨‍🎓 Student Report Card</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-container">
+      <!-- VIEW 1: TEACHER PORTAL -->
+      <section id="teacher-portal" class="portal-section active">
+        <!-- Analytics Highlights -->
+        <div class="analytics-row">
+          <div class="stat-card">
+            <span class="stat-label">Enrolled Students</span>
+            <div class="stat-val" id="analyticsTotal">0</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Class Average %</span>
+            <div class="stat-val" id="analyticsAvg">0%</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Passing Rate</span>
+            <div class="stat-val" id="analyticsPass" style="color: var(--success);">0%</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Highest Scorer</span>
+            <div class="stat-val" id="analyticsTopper" style="font-size: 1.1rem; color: #38bdf8; margin-top: 10px;">--</div>
+          </div>
+        </div>
+
+        <div class="grid-layout">
+          <!-- Add Student Record Form -->
+          <div class="card">
+            <h3 class="card-title">Enroll / Add Student Record</h3>
+            <form id="addStudentForm" onsubmit="handleAddStudent(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Roll Number *</label>
+                  <input type="text" id="stuRollNo" class="form-control" required placeholder="e.g. 24CO05" />
+                </div>
+                <div class="form-group">
+                  <label>Full Name *</label>
+                  <input type="text" id="stuName" class="form-control" required placeholder="e.g. Rohit Patil" />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Email Address *</label>
+                  <input type="email" id="stuEmail" class="form-control" required placeholder="rohit@college.edu" />
+                </div>
+                <div class="form-group">
+                  <label>Attendance (%) *</label>
+                  <input type="number" id="stuAttendance" class="form-control" min="0" max="100" value="85" required />
+                </div>
+              </div>
+
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #cbd5e1; margin: 12px 0 8px 0;">
+                Subject Marks (Out of 100):
+              </label>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="form-group">
+                  <label>Web Tech</label>
+                  <input type="number" id="marksWT" class="form-control" min="0" max="100" required placeholder="85" />
+                </div>
+                <div class="form-group">
+                  <label>Database Systems</label>
+                  <input type="number" id="marksDB" class="form-control" min="0" max="100" required placeholder="78" />
+                </div>
+                <div class="form-group">
+                  <label>Computer Networks</label>
+                  <input type="number" id="marksCN" class="form-control" min="0" max="100" required placeholder="80" />
+                </div>
+                <div class="form-group">
+                  <label>Data Structures</label>
+                  <input type="number" id="marksDS" class="form-control" min="0" max="100" required placeholder="90" />
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 14px; padding: 12px;">
+                + Save Student Record
+              </button>
+            </form>
+          </div>
+
+          <!-- Students Gradebook Table -->
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <h3 class="card-title" style="margin-bottom: 0;">Student Gradebook</h3>
+              <input type="text" id="searchStudent" class="form-control" placeholder="Search name or roll no..." style="max-width: 200px;" oninput="onSearchStudent(this.value)" />
+            </div>
+
+            <div style="max-height: 500px; overflow-y: auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Roll No</th>
+                    <th>Name</th>
+                    <th>Attendance</th>
+                    <th>Score</th>
+                    <th>Grade</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 2: STUDENT REPORT CARD PORTAL -->
+      <section id="student-portal" class="portal-section">
+        <div class="card" style="max-width: 650px; margin: 0 auto 32px auto; text-align: center;">
+          <h2 style="margin-bottom: 8px;">View Your Performance Report</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+            Enter your college Roll Number to generate your official performance report card.
+          </p>
+          <div style="display: flex; gap: 10px; max-width: 400px; margin: 0 auto;">
+            <input type="text" id="reportRollInput" class="form-control" placeholder="e.g. 24CO01" style="text-transform: uppercase;" />
+            <button class="btn btn-primary" onclick="lookupReport()">View Report</button>
+          </div>
+        </div>
+
+        <div id="reportCardDisplay" style="max-width: 750px; margin: 0 auto;">
+          <!-- Dynamically populated report card -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Edit Student Modal -->
+    <div id="editStudentModal" class="modal">
+      <div class="modal-box">
+        <h3 style="margin-bottom: 16px;">Update Student Record</h3>
+        <form id="editStudentForm" onsubmit="handleUpdateStudent(event)">
+          <input type="hidden" id="editStuId" />
+          <div class="form-row">
+            <div class="form-group">
+              <label>Roll No</label>
+              <input type="text" id="editStuRollNo" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+              <label>Name</label>
+              <input type="text" id="editStuName" class="form-control" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="editStuEmail" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label>Attendance (%)</label>
+              <input type="number" id="editStuAttendance" class="form-control" min="0" max="100" required />
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="form-group"><label>Web Tech</label><input type="number" id="editMarksWT" class="form-control" min="0" max="100" required /></div>
+            <div class="form-group"><label>Database Systems</label><input type="number" id="editMarksDB" class="form-control" min="0" max="100" required /></div>
+            <div class="form-group"><label>Computer Networks</label><input type="number" id="editMarksCN" class="form-control" min="0" max="100" required /></div>
+            <div class="form-group"><label>Data Structures</label><input type="number" id="editMarksDS" class="form-control" min="0" max="100" required /></div>
+          </div>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+            <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Update Record</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <footer class="footer">
+      <p>OST Lab IA-2 (Roll No: 61 to 67) | Stack: Express Backend APIs + MongoDB Storage</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

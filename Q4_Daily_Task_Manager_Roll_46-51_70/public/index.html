@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskPilot - Daily Task Manager (Roll 46-51, 70)</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <header class="navbar">
+      <div class="nav-container">
+        <div class="brand">
+          <span class="brand-icon">⚡</span>
+          <span class="brand-title">Task<strong>Pilot</strong></span>
+        </div>
+        <div class="badge-header">
+          Roll No: 46 to 51, 70
+        </div>
+      </div>
+    </header>
+
+    <main class="content-container">
+      <!-- Top Stat Counters -->
+      <section class="stats-row">
+        <div class="stat-pill"><span class="stat-num" id="statTotal">0</span> Total Tasks</div>
+        <div class="stat-pill pending"><span class="stat-num" id="statPending">0</span> Pending</div>
+        <div class="stat-pill progress"><span class="stat-num" id="statProgress">0</span> In Progress</div>
+        <div class="stat-pill completed"><span class="stat-num" id="statCompleted">0</span> Completed</div>
+      </section>
+
+      <!-- Add New Task Card -->
+      <section class="card" style="margin-bottom: 28px;">
+        <h3 class="card-title">Add Daily Task</h3>
+        <form id="createTaskForm" onsubmit="handleCreateTask(event)">
+          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 14px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <input type="text" id="taskTitle" class="form-control" placeholder="What needs to be done today? *" required />
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <input type="date" id="taskDueDate" class="form-control" required />
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <select id="taskPriority" class="form-control">
+                <option value="Low">🟢 Low Priority</option>
+                <option value="Medium" selected>🟡 Medium Priority</option>
+                <option value="High">🔴 High Priority</option>
+              </select>
+            </div>
+          </div>
+          <div style="display: flex; gap: 14px; margin-top: 14px;">
+            <input type="text" id="taskDesc" class="form-control" placeholder="Optional details or description..." />
+            <button type="submit" class="btn btn-primary" style="white-space: nowrap; padding: 10px 24px;">+ Add Task</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Task Filtering & List -->
+      <section class="card">
+        <div class="list-header">
+          <div class="filter-tabs">
+            <button class="filter-btn active" onclick="setFilter('All', this)">All Tasks</button>
+            <button class="filter-btn" onclick="setFilter('Pending', this)">Pending</button>
+            <button class="filter-btn" onclick="setFilter('In Progress', this)">In Progress</button>
+            <button class="filter-btn" onclick="setFilter('Completed', this)">Completed</button>
+          </div>
+          <input type="text" id="searchTaskInput" class="form-control" placeholder="Search tasks..." style="max-width: 250px;" oninput="onSearch(this.value)" />
+        </div>
+
+        <div id="tasksList" class="tasks-container">
+          Loading tasks...
+        </div>
+      </section>
+    </main>
+
+    <!-- Edit Task Modal -->
+    <div id="editTaskModal" class="modal">
+      <div class="modal-box">
+        <h3 style="margin-bottom: 16px;">Edit Task</h3>
+        <form id="editTaskForm" onsubmit="handleUpdateTask(event)">
+          <input type="hidden" id="editTaskId" />
+          <div class="form-group">
+            <label>Task Title *</label>
+            <input type="text" id="editTaskTitle" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="editTaskDesc" class="form-control" rows="2"></textarea>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label>Priority</label>
+              <select id="editTaskPriority" class="form-control">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select id="editTaskStatus" class="form-control">
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Due Date *</label>
+            <input type="date" id="editTaskDueDate" class="form-control" required />
+          </div>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+            <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <footer class="footer">
+      <p>OST Lab IA-2 (Roll No: 46 to 51, 70) | Stack: Node.js + Express.js + MongoDB Tasks Database</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

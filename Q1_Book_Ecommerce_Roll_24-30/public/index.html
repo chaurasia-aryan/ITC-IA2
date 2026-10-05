@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BookStore - Browse, Search & Purchase Books (Roll 24-30)</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- Navbar / React Router Header Simulation -->
+    <header class="navbar">
+      <div class="nav-container">
+        <a href="#/" class="brand-logo" onclick="navigate('/')">
+          <span class="logo-icon">📚</span>
+          <span class="logo-text">ReadHub<strong>Books</strong></span>
+        </a>
+
+        <div class="nav-links">
+          <button class="nav-btn active" id="nav-catalog" onclick="navigate('/')">Catalog</button>
+          <button class="nav-btn" id="nav-admin" onclick="navigate('/admin')">Admin Portal</button>
+          <button class="nav-btn cart-btn" id="nav-cart" onclick="navigate('/cart')">
+            🛒 Cart (<span id="cart-count">0</span>)
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Dynamic Route View -->
+    <main class="main-content" id="route-outlet">
+      <!-- Dynamically filled by app.js based on current route -->
+    </main>
+
+    <footer class="footer">
+      <div class="footer-container">
+        <p>OST Lab IA-2 (Roll No: 24 to 30) | Stack: React Router Navigation + Node/Express + MongoDB</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

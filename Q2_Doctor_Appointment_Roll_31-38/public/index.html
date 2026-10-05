@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediSchedule - Doctor Appointment System (Roll 31-38)</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <header class="navbar">
+      <div class="nav-container">
+        <div class="brand">
+          <span class="brand-icon">🩺</span>
+          <span class="brand-title">Medi<strong>Schedule</strong></span>
+        </div>
+        <div class="tab-buttons">
+          <button class="tab-btn active" id="tab-book" onclick="switchTab('book')">📅 Book Appointment</button>
+          <button class="tab-btn" id="tab-patient" onclick="switchTab('patient')">📋 My Appointments</button>
+          <button class="tab-btn" id="tab-doctor" onclick="switchTab('doctor')">👨‍⚕️ Doctor Schedule & Availability</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-container">
+      <!-- TAB 1: PATIENT BOOKING -->
+      <section id="view-book" class="view-section active">
+        <div class="section-header">
+          <h2>Book a Doctor's Appointment</h2>
+          <p>Select your specialist, date, and preferred time slot.</p>
+        </div>
+
+        <div class="grid-layout">
+          <!-- Doctor Selection Card -->
+          <div class="card">
+            <h3 class="card-title">1. Available Specialists</h3>
+            <div id="doctorList" class="doctor-list">Loading doctors...</div>
+          </div>
+
+          <!-- Booking Form Card -->
+          <div class="card">
+            <h3 class="card-title">2. Patient & Slot Details</h3>
+            <form id="bookingForm" onsubmit="handleBookAppointment(event)">
+              <div class="form-group">
+                <label>Selected Doctor</label>
+                <input type="text" id="selectedDoctorName" class="form-control" readonly placeholder="Click a doctor on the left" required />
+                <input type="hidden" id="selectedDoctorId" />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Appointment Date *</label>
+                  <input type="date" id="bookDate" class="form-control" required onchange="onDateChange()" />
+                </div>
+                <div class="form-group">
+                  <label>Available Time Slot *</label>
+                  <select id="bookTimeSlot" class="form-control" required>
+                    <option value="">Select Doctor & Date first</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Patient Full Name *</label>
+                <input type="text" id="patientName" class="form-control" required placeholder="e.g. Ramesh Patel" />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Email Address *</label>
+                  <input type="email" id="patientEmail" class="form-control" required placeholder="patient@example.com" />
+                </div>
+                <div class="form-group">
+                  <label>Phone Number *</label>
+                  <input type="tel" id="patientPhone" class="form-control" required placeholder="9876543210" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Symptoms / Reason for Visit</label>
+                <textarea id="patientSymptoms" class="form-control" rows="2" placeholder="Describe symptoms or medical reason..."></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">Confirm & Book Appointment</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: PATIENT MY APPOINTMENTS (RESCHEDULE / CANCEL) -->
+      <section id="view-patient" class="view-section">
+        <div class="section-header">
+          <h2>Patient Appointments Management</h2>
+          <p>Lookup your appointments by email, reschedule timing, or cancel booking.</p>
+        </div>
+
+        <div class="card" style="margin-bottom: 24px;">
+          <div style="display: flex; gap: 12px; max-width: 500px;">
+            <input type="email" id="searchPatientEmail" class="form-control" placeholder="Enter patient email to filter..." />
+            <button class="btn btn-primary" onclick="loadPatientAppointments()">Search</button>
+            <button class="btn btn-secondary" onclick="loadAllAppointments()">View All</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div id="patientAppointmentsList">Loading appointments...</div>
+        </div>
+      </section>
+
+      <!-- TAB 3: DOCTOR DASHBOARD (DAILY SCHEDULE & AVAILABILITY) -->
+      <section id="view-doctor" class="view-section">
+        <div class="section-header">
+          <h2>Doctor Schedule & Availability Portal</h2>
+          <p>Doctors can view scheduled patients by date and update available slots.</p>
+        </div>
+
+        <div class="grid-layout">
+          <!-- Daily Schedule -->
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <h3 class="card-title" style="margin-bottom: 0;">Daily Schedule</h3>
+              <div style="display: flex; gap: 8px;">
+                <select id="doctorFilterSelect" class="form-control" onchange="loadDoctorSchedule()"></select>
+                <input type="date" id="scheduleDateFilter" class="form-control" onchange="loadDoctorSchedule()" />
+              </div>
+            </div>
+            <div id="doctorScheduleContainer">Select doctor and date to see schedule.</div>
+          </div>
+
+          <!-- Availability Manager -->
+          <div class="card">
+            <h3 class="card-title">Manage Availability & Slots</h3>
+            <div class="form-group">
+              <label>Select Doctor Profile</label>
+              <select id="availabilityDocSelect" class="form-control" onchange="onSelectDocAvailability()"></select>
+            </div>
+            <div class="form-group">
+              <label>Accepting New Appointments?</label>
+              <div style="display: flex; gap: 12px; margin-top: 6px;">
+                <label><input type="radio" name="isAccepting" value="true" checked> Yes, Available</label>
+                <label><input type="radio" name="isAccepting" value="false"> No, On Leave / Busy</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Configured Slots (Comma separated):</label>
+              <input type="text" id="slotsConfigInput" class="form-control" placeholder="09:00 AM, 11:00 AM, 02:00 PM" />
+            </div>
+            <button class="btn btn-primary" onclick="saveDoctorAvailability()">Save Availability Settings</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Reschedule Modal -->
+    <div id="rescheduleModal" class="modal">
+      <div class="modal-box">
+        <h3 style="margin-bottom: 16px;">Reschedule Appointment</h3>
+        <input type="hidden" id="rescheduleApptId" />
+        <div class="form-group">
+          <label>New Date</label>
+          <input type="date" id="rescheduleDate" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label>New Time Slot</label>
+          <select id="rescheduleSlot" class="form-control">
+            <option value="09:00 AM">09:00 AM</option>
+            <option value="10:00 AM">10:00 AM</option>
+            <option value="11:30 AM">11:30 AM</option>
+            <option value="02:00 PM">02:00 PM</option>
+            <option value="03:30 PM">03:30 PM</option>
+            <option value="05:00 PM">05:00 PM</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+          <button class="btn btn-secondary" onclick="closeRescheduleModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="submitReschedule()">Confirm Reschedule</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <footer class="footer">
+      <p>OST Lab IA-2 (Roll No: 31 to 38) | Stack: Express REST APIs + MongoDB + React Component Architecture</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

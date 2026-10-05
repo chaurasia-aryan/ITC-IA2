@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpendWise - Daily Expense Tracker & Reports (Roll 39-45)</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <header class="navbar">
+      <div class="nav-container">
+        <div class="brand">
+          <span class="brand-icon">💳</span>
+          <span class="brand-title">Spend<strong>Wise</strong></span>
+        </div>
+        <div class="month-selector-box">
+          <label style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Report Month:</label>
+          <input type="month" id="reportMonthFilter" class="month-input" onchange="onFilterChange()" />
+        </div>
+      </div>
+    </header>
+
+    <main class="content-container">
+      <!-- Summary Metrics Cards -->
+      <section class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label">Total Monthly Expenses</span>
+          <div class="metric-val" id="metricTotal">₹0</div>
+          <span class="metric-sub" id="metricCount">0 transactions recorded</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Average per Expense</span>
+          <div class="metric-val" id="metricAvg">₹0</div>
+          <span class="metric-sub">Mean spending amount</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Top Spending Category</span>
+          <div class="metric-val" id="metricTopCat" style="color: #38bdf8;">--</div>
+          <span class="metric-sub" id="metricTopAmount">₹0 spent</span>
+        </div>
+      </section>
+
+      <!-- Charts & Visual Analytics Section -->
+      <section class="charts-grid">
+        <div class="card">
+          <h3 class="card-title">Category Spending Distribution</h3>
+          <div id="categoryChartContainer" class="chart-box">
+            <!-- Dynamic SVG Donut / Category Bar Chart -->
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Add Daily Expense</h3>
+          <form id="addExpenseForm" onsubmit="handleAddExpense(event)">
+            <div class="form-group">
+              <label>Expense Title / Description *</label>
+              <input type="text" id="expTitle" class="form-control" required placeholder="e.g. Lunch with friends" />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Amount (₹) *</label>
+                <input type="number" id="expAmount" class="form-control" required min="1" placeholder="450" />
+              </div>
+              <div class="form-group">
+                <label>Category *</label>
+                <select id="expCategory" class="form-control" required>
+                  <option value="Food">🍔 Food & Dining</option>
+                  <option value="Transport">🚕 Transport</option>
+                  <option value="Entertainment">🎬 Entertainment</option>
+                  <option value="Utilities">💡 Utilities & Bills</option>
+                  <option value="Healthcare">💊 Healthcare</option>
+                  <option value="Shopping">🛍️ Shopping</option>
+                  <option value="Other">📦 Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Date *</label>
+                <input type="date" id="expDate" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label>Payment Method</label>
+                <select id="expPayment" class="form-control">
+                  <option value="UPI">UPI / GPay / Paytm</option>
+                  <option value="Card">Debit / Credit Card</option>
+                  <option value="NetBanking">Net Banking</option>
+                  <option value="Cash">Cash</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 8px;">
+              + Save Expense
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Expense Records List & Table -->
+      <section class="card" style="margin-top: 28px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+          <h3 class="card-title" style="margin-bottom: 0;">Detailed Transactions</h3>
+          <div style="display: flex; gap: 10px;">
+            <select id="categoryFilter" class="form-control" onchange="onFilterChange()" style="width: auto;">
+              <option value="All">All Categories</option>
+              <option value="Food">Food</option>
+              <option value="Transport">Transport</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Method</th>
+                <th>Amount</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="expensesTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- Edit Expense Modal -->
+    <div id="editModal" class="modal">
+      <div class="modal-box">
+        <h3 style="margin-bottom: 16px;">Update Expense</h3>
+        <form id="editExpenseForm" onsubmit="handleUpdateExpense(event)">
+          <input type="hidden" id="editExpId" />
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="editExpTitle" class="form-control" required />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Amount (₹)</label>
+              <input type="number" id="editExpAmount" class="form-control" required min="1" />
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <select id="editExpCategory" class="form-control" required>
+                <option value="Food">Food</option>
+                <option value="Transport">Transport</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" id="editExpDate" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label>Payment Method</label>
+              <select id="editExpPayment" class="form-control">
+                <option value="UPI">UPI</option>
+                <option value="Card">Card</option>
+                <option value="NetBanking">NetBanking</option>
+                <option value="Cash">Cash</option>
+              </select>
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+            <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Update</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <footer class="footer">
+      <p>OST Lab IA-2 (Roll No: 39 to 45) | Stack: Node.js Express Backend + MongoDB + Analytics Charts</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
